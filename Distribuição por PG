@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Distribuidor de HC - Sistema Dinâmico</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #1a5276, #2e86c1);
+            color: white;
+            padding: 20px 25px;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 1.8rem;
+        }
+        .header p {
+            margin: 8px 0 0;
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+        .log-area {
+            padding: 20px;
+            border-bottom: 1px solid #dee2e6;
+            background: #f8f9fa;
+        }
+        .log-area label {
+            font-weight: 600;
+            display: block;
+            margin-bottom: 8px;
+            color: #2c3e50;
+        }
+        .log-textarea {
+            width: 100%;
+            height: 250px;
+            padding: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            border: 2px solid #ced4da;
+            border-radius: 8px;
+            resize: vertical;
+            background: #fff;
+        }
+        .log-textarea:focus {
+            outline: none;
+            border-color: #2e86c1;
+        }
+        .btn-processar {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 12px;
+            transition: 0.2s;
+        }
+        .btn-processar:hover {
+            background: #1e7e34;
+        }
+        .btn-exemplo {
+            background: #6c757d;
+            margin-left: 10px;
+        }
+        .btn-exemplo:hover {
+            background: #5a6268;
+        }
+        .stats-bar {
+            background: #eaf2f8;
+            padding: 12px 20px;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            font-size: 14px;
+            border-bottom: 1px solid #d4e6f1;
+        }
+        .stat-item {
+            background: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .stat-label {
+            font-weight: 600;
+            color: #1a5276;
+        }
+        .filtros {
+            padding: 15px 20px;
+            background: white;
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .search-box {
+            flex: 2;
+            min-width: 200px;
+        }
+        .search-box input {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #ced4da;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        .filter-group select {
+            padding: 10px 15px;
+            border: 1px solid #ced4da;
+            border-radius: 8px;
+            background: white;
+            min-width: 250px;
+            font-size: 14px;
+        }
+        .procuradores-grid {
+            padding: 15px 20px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .procurador-chip {
+            background: #e9ecef;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: 0.2s;
+            font-weight: 500;
+        }
+        .procurador-chip:hover {
+            background: #dee2e6;
+            transform: scale(1.02);
+        }
+        .procurador-chip.active {
+            background: #2e86c1;
+            color: white;
+        }
+        .table-wrapper {
+            overflow-x: auto;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th {
+            background: #f1f3f5;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: #2c3e50;
+            border-bottom: 2px solid #dee2e6;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #e9ecef;
+            font-size: 0.8rem;
+        }
+        tr:hover {
+            background: #f8f9fa;
+        }
+        .processo-num {
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+            color: #1a5276;
+            white-space: nowrap;
+        }
+        .link-buttons {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .btn-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+        .btn-mp { background: #1a5276; color: white; }
+        .btn-mp:hover { background: #0e3a54; }
+        .btn-tj { background: #28a745; color: white; }
+        .btn-tj:hover { background: #1e7e34; }
+        .badge-prior {
+            background: #e74c3c;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 0.65rem;
+            font-weight: 600;
+        }
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #6c757d;
+        }
+        .footer {
+            padding: 15px 20px;
+            background: #f8f9fa;
+            font-size: 0.7rem;
+            color: #6c757d;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="card">
+        <div class="header">
+            <h1>📋 Processos Distribuídos por Procurador</h1>
+            <p>Cole o log da distribuição - O sistema identifica automaticamente processos e procuradores</p>
+        </div>
+
+        <div class="log-area">
+            <label>📌 Cole aqui o LOG da distribuição: </label>
+<textarea id="logInput" class="log-textarea" placeholder="Cole aqui o log da distribuição..."></textarea>
+            <div>
+                <button class="btn-processar" onclick="processarLog()">📊 Processar Log</button>
+                <button class="btn-processar btn-exemplo" onclick="resetarSistema()">♻️ Resetar</button>
+
+            </div>
+        </div>
+
+        <div id="resultados" style="display: none;">
+            <div class="stats-bar" id="statsBar"></div>
+            
+            <div class="procuradores-grid" id="procuradoresGrid"></div>
+            
+            <div class="filtros">
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="🔍 Buscar por número do processo...">
+                </div>
+                <div class="filter-group">
+                    <select id="procuradorFilter">
+                        <option value="">Todos os procuradores</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <table id="processosTable">
+                    <thead>
+                        <tr>
+                            <th>Nº Processo</th>
+                            <th>Tipo</th>
+                            <th>Prioridade</th>
+                            <th>Procurador(a)</th>
+                            <th>Links</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="footer">
+            🔗 = Gestão MP | 👤 = Partes/Advogados TJMG | Clique nos nomes dos procuradores para filtrar
+           <br> Anna do HC - 2026<br>
+        </div>
+    </div>
+</div>
+
+<script>
+    let processos = []; // Array global para armazenar os processos processados
+
+    // Função para extrair número limpo (17 dígitos)
+    function numeroParaLink(numero) {
+        let limpo = numero.replace(/\./g, '').replace(/-/g, '').replace(/\//g, '');
+        if (limpo.length > 17) limpo = limpo.substring(0, 17);
+        while(limpo.length < 17) limpo = '0' + limpo;
+        return limpo;
+    }
+
+    // Gerar link do MP
+    function gerarLinkMP(numero) {
+        let numLimpo = numeroParaLink(numero);
+        return `https://aplicacao.mpmg.mp.br/pareceres/processoParecerPesquisar.do?numProcessoCorrente=0${numLimpo}`;
+    }
+
+    // Gerar link do TJMG
+    function gerarLinkTJ(numero) {
+        let numLimpo = numeroParaLink(numero);
+        return `https://www4.tjmg.jus.br/juridico/sf/proc_partes_advogados2.jsp?listaProcessos=${numLimpo}`;
+    }
+
+
+
+function normalizarProcurador(nome) {
+    return nome
+        .toUpperCase()
+        // remove sufixos conhecidos
+        .replace(/\s*-\s*HC/g, '')
+        .replace(/\s*DEPEND/g, '')
+        .replace(/\s*PREVEN.*/g, '')     // remove PREVEN e qualquer coisa depois
+        .replace(/\s*DILIG.*/g, '')    // remove DILIGEN e qualquer coisa depois
+        
+        // remove datas se grudarem
+        .replace(/\d{4}-\d{2}-\d{2}.*/, '')
+        
+        // limpa espaços
+        .replace(/\s+/g, ' ')
+        .trim();
+}
+
+
+
+
+
+
+
+
+    // Função principal que processa o log
+    function processarLog() {
+        const logText = document.getElementById('logInput').value;
+        if (!logText.trim()) {
+            alert('⚠️ Cole o log da distribuição primeiro!');
+            return;
+        }
+
+        const linhas = logText.split('\n');
+        processos = [];
+
+        // Regex para capturar: numero - tipo -> procurador
+        // Padrão: 1.0000.26.176.823-8/000 - HABEAS CORPUS - CRIMINAL RP -> JACQUELINE FERREIRA MOISES - HC 2026-04-24...
+const regex = /(\d+\.\d+\.\d+\.\d+\.\d+-\d+\/\d+).*->\s*([A-Z\s\-]+)/i;
+        for (let linha of linhas) {
+            linha = linha.trim();
+            if (!linha) continue;
+
+            const match = linha.match(regex);
+            if (match) {
+                let numero = match[1];
+             let tipo = "HABEAS CORPUS";
+             let procurador = match[2];
+                
+                // Limpar sujeira no final do procurador (remover data se grudou)
+procurador = procurador.replace(/\s+\d{4}-\d{2}-\d{2}.*$/, '').trim();
+procurador = normalizarProcurador(procurador);
+
+                // Detectar prioridade (se tem RP ou Prior:true no texto - mas pelo padrão, depende do tipo)
+                let prioridade = tipo.toUpperCase().includes('RP') || linha.toUpperCase().includes('PRIOR:TRUE');
+                
+                processos.push({
+                    numero: numero,
+                    tipo: tipo,
+                    prioridade: prioridade,
+                    procurador: procurador
+                });
+            } else {
+                // Tenta outro padrão mais simples (sem tipo detalhado)
+                const regexSimples = /(\d+\.\d+\.\d+\.\d+\.\d+-\d+\/\d+)\s*->\s*([A-Z\s]+(?:-?\s*HC)?)/i;
+                const match2 = linha.match(regexSimples);
+                if (match2) {
+                    processos.push({
+                        numero: match2[1],
+                        tipo: "HABEAS CORPUS",
+                        prioridade: false,
+                        procurador: match2[2].replace(/\s+\d{4}-\d{2}-\d{2}.*$/, '').trim()
+                    });
+                }
+            }
+        }
+
+        if (processos.length === 0) {
+            alert('❌ Nenhum processo identificado. Verifique se o log está no formato correto.\n\nFormato esperado:\n1.0000.26.XXX.X-XX/000 - TIPO -> NOME DO PROCURADOR');
+            return;
+        }
+
+        // Mostrar área de resultados
+        document.getElementById('resultados').style.display = 'block';
+        
+        // Atualizar estatísticas
+        atualizarEstatisticas();
+        
+        // Popular filtros
+        popularFiltros();
+        
+        // Renderizar tabela
+        renderizarTabela();
+    }
+
+    function atualizarEstatisticas() {
+        const totalProcessos = processos.length;
+        const procuradoresUnicos = [...new Set(processos.map(p => p.procurador))];
+        const totalProcuradores = procuradoresUnicos.length;
+        const prioritarios = processos.filter(p => p.prioridade).length;
+        
+        // Contar por procurador
+        let contagem = {};
+        processos.forEach(p => {
+            contagem[p.procurador] = (contagem[p.procurador] || 0) + 1;
+        });
+        
+        let statsHtml = `
+            <span class="stat-item"><span class="stat-label">📊 Total de processos:</span> ${totalProcessos}</span>
+            <span class="stat-item"><span class="stat-label">👨‍⚖️ Procuradores:</span> ${totalProcuradores}</span>
+            <span class="stat-item"><span class="stat-label">🔴 Prioritários:</span> ${prioritarios}</span>
+            <span class="stat-item"><span class="stat-label">📅 Data:</span> ${new Date().toLocaleDateString('pt-BR')}</span>
+        `;
+        
+        // Adicionar top distribuidor
+        let topProcurador = Object.entries(contagem).sort((a,b) => b[1] - a[1])[0];
+        if (topProcurador) {
+            statsHtml += `<span class="stat-item"><span class="stat-label">🏆 Mais processos:</span> ${topProcurador[0].substring(0,30)} (${topProcurador[1]})</span>`;
+        }
+        
+        document.getElementById('statsBar').innerHTML = statsHtml;
+    }
+
+function popularFiltros() {
+    const procuradores = [...new Set(processos.map(p => p.procurador))].sort();
+
+    const select = document.getElementById('procuradorFilter');
+    select.innerHTML = '<option value="">📌 Todos os procuradores</option>' + 
+        procuradores.map(p => `<option value="${p}">${p} (${processos.filter(pr => pr.procurador === p).length})</option>`).join('');
+
+    const grid = document.getElementById('procuradoresGrid');
+
+    grid.innerHTML = procuradores.map(p => {
+    const qtd = processos.filter(pr => pr.procurador === p).length;
+
+    return `
+    <div class="procurador-chip" style="display:flex; align-items:center; gap:8px;">
+        
+        <span onclick="filtrarPorProcurador('${p}')"
+              style="cursor:pointer;">
+            👤 ${p.length > 30 ? p.substring(0,27)+'...' : p} (${qtd})
+        </span>
+
+        <button onclick="copiarProcessos('${p}')"
+                style="
+                    background:#2e86c1;
+                    color:white;
+                    border:none;
+                    border-radius:6px;
+                    padding:3px 8px;
+                    font-size:11px;
+                    cursor:pointer;
+                ">
+            📋 Copiar
+        </button>
+
+    </div>
+    `;
+}).join('');
+}
+
+    function filtrarPorProcurador(nome) {
+        const select = document.getElementById('procuradorFilter');
+        select.value = nome;
+        renderizarTabela();
+        
+        // Scroll para a tabela
+        document.querySelector('.table-wrapper').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+function copiarProcessos(procurador) {
+    const lista = processos
+        .filter(p => p.procurador === procurador)
+        .map(p => p.numero)
+        .join('\n');
+
+    navigator.clipboard.writeText(lista)
+        .then(() => {
+            alert(`✅ Copiado!\n\n${lista.split('\n').length} processos de:\n${procurador}`);
+        })
+        .catch(() => {
+            alert('❌ Erro ao copiar');
+        });
+}
+
+function resetarSistema() {
+    if (!confirm('Deseja realmente resetar tudo?')) return;
+
+    processos = [];
+
+    document.getElementById('logInput').value = '';
+    document.getElementById('searchInput').value = '';
+    document.getElementById('procuradorFilter').innerHTML = '<option value="">Todos</option>';
+    document.getElementById('tableBody').innerHTML = '';
+    document.getElementById('statsBar').innerHTML = '';
+    document.getElementById('procuradoresGrid').innerHTML = '';
+
+    document.getElementById('resultados').style.display = 'none';
+}
+
+
+
+
+
+
+    function renderizarTabela() {
+        const filtroTexto = document.getElementById('searchInput').value.toLowerCase();
+        const filtroProcurador = document.getElementById('procuradorFilter').value;
+        
+        let filtrados = processos.filter(p => {
+            let matchTexto = filtroTexto === '' || p.numero.toLowerCase().includes(filtroTexto);
+            let matchProcurador = filtroProcurador === '' || p.procurador === filtroProcurador;
+            return matchTexto && matchProcurador;
+        });
+        
+        const tbody = document.getElementById('tableBody');
+        
+        if (filtrados.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" class="no-results">❌ Nenhum processo encontrado para este filtro</td></tr>';
+            return;
+        }
+        
+        tbody.innerHTML = filtrados.map(p => `
+            <tr>
+                <td class="processo-num">${p.numero}</td>
+                <td>${p.tipo}</td>
+                <td style="text-align:center">${p.prioridade ? '<span class="badge-prior">Prioritário</span>' : '—'}</td>
+                <td><strong>${p.procurador}</strong></td>
+                <td>
+                    <div class="link-buttons">
+                        <a href="${gerarLinkMP(p.numero)}" target="_blank" class="btn-link btn-mp" title="Abrir pareceres MP">🔗 MP</a>
+                        <a href="${gerarLinkTJ(p.numero)}" target="_blank" class="btn-link btn-tj" title="Abrir partes/advogados TJ">👤 TJ</a>
+                    </div>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+
+
+    // Event listeners
+    document.getElementById('searchInput').addEventListener('input', () => renderizarTabela());
+    document.getElementById('procuradorFilter').addEventListener('change', () => renderizarTabela());
+</script>
+</body>
+</html>
