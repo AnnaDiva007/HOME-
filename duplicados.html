@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Verificador de Processos Duplicados — Light / Dark</title>
+
+  <!-- Fonte moderna -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ======= THEME VARIABLES (light default) ======= */
+    :root{
+      --primary-color: #4f46e5;     /* Azul-violeta moderno */
+      --secondary-color: #6366f1;   /* Azul mais claro */
+      --accent-color: #06b6d4;      /* Turquesa vibrante */
+      --warning-color: #f59e0b;     /* Amarelo âmbar */
+      --error-color: #ef4444;       /* Vermelho suave */
+
+      --bg-page: linear-gradient(135deg,#e0f2fe,#ede9fe);
+      --surface: #ffffff;
+      --muted: #6b7280;
+      --text: #111827;
+      --border-color: #d1d5db;
+      --shadow: 0 6px 20px rgba(15, 23, 42, 0.08);
+      --pre-bg: #fbfdff;
+      --btn-ghost-bg: #ffffff;
+    }
+
+    /* ======= DARK THEME OVERRIDE (prefers or manual) ======= */
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg-page: linear-gradient(180deg,#071228,#0b1220);
+        --surface: #071227;
+        --muted: #94a3b8;
+        --text: #e6eef8;
+        --border-color: #1f2937;
+        --shadow: 0 8px 28px rgba(2,6,23,0.6);
+        --pre-bg: #021428;
+        --btn-ghost-bg: rgba(255,255,255,0.03);
+      }
+    }
+
+    /* data-theme="dark" forces dark (overrides prefers) */
+    :root[data-theme="dark"] {
+      --bg-page: linear-gradient(180deg,#071228,#0b1220);
+      --surface: #071227;
+      --muted: #94a3b8;
+      --text: #e6eef8;
+      --border-color: #1f2937;
+      --shadow: 0 8px 28px rgba(2,6,23,0.6);
+      --pre-bg: #021428;
+      --btn-ghost-bg: rgba(255,255,255,0.03);
+    }
+
+    /* ======= BASIC RESET / LAYOUT ======= */
+    *{box-sizing: border-box;margin:0;padding:0}
+    html,body{height:100%}
+    body {
+      font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg-page);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 28px;
+    }
+
+    .wrap {
+      width: 100%;
+      max-width: 980px;
+      background: linear-gradient(180deg, var(--surface), rgba(255,255,255,0.02));
+      border-radius: 14px;
+      padding: 18px;
+      box-shadow: var(--shadow);
+      position: relative;
+      border: 1px solid var(--border-color);
+    }
+
+    header.header {
+      display:flex;
+      gap:12px;
+      align-items:center;
+      justify-content:space-between;
+      margin-bottom:10px;
+    }
+
+    .title {
+      display:flex;
+      gap:12px;
+      align-items:center;
+    }
+
+    h2 {
+      font-size: 18px;
+      margin: 0;
+      color: var(--primary-color);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Toggle button */
+    .theme-toggle {
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 10px;
+      border-radius:10px;
+      background: var(--btn-ghost-bg);
+      border: 1px solid var(--border-color);
+      cursor: pointer;
+      color: var(--text);
+      font-weight:600;
+    }
+
+    .theme-toggle:active { transform: translateY(1px) }
+
+    /* TEXTAREAS */
+    textarea {
+      width: 100%;
+      min-height: 180px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1.5px solid var(--border-color);
+      font-family: ui-monospace, "SFMono-Regular", Menlo, Monaco, monospace;
+      font-size: 13px;
+      resize: vertical;
+      background: var(--pre-bg);
+      color: var(--text);
+      transition: box-shadow .18s, border-color .18s, background .18s;
+    }
+
+    textarea::placeholder { color: var(--muted); opacity: 0.8; }
+
+    textarea:focus{
+      outline: none;
+      border-color: var(--accent-color);
+      box-shadow: 0 6px 18px rgba(6,182,212,0.08);
+    }
+
+    .topo {
+      margin-top: 12px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+
+    /* BUTTONS */
+    .btn {
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 14px;
+      transition: transform .14s ease, box-shadow .14s;
+      display: inline-flex;
+      align-items: center;
+      gap:8px;
+    }
+    .btn:active{ transform: translateY(1px); }
+
+    .btn-primary {
+      background: linear-gradient(180deg,var(--primary-color),var(--secondary-color));
+      color: white;
+      box-shadow: 0 6px 18px rgba(99,102,241,0.12);
+    }
+    .btn-ghost {
+      background: var(--btn-ghost-bg);
+      color: var(--text);
+      border: 1px solid var(--border-color);
+    }
+    .btn-success {
+      background: linear-gradient(180deg,#34d399,#10b981);
+      color: white;
+    }
+
+    .small-btn { font-size: 13px; padding: 8px 10px; border-radius: 8px; }
+
+    /* BLOCO / PRE / INFO */
+    .bloco {
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      padding: 14px;
+      margin-top: 14px;
+      border-radius: 12px;
+      box-shadow: 0 4px 14px rgba(15,23,42,0.04);
+      border: 1px solid var(--border-color);
+    }
+
+    pre {
+      white-space: pre-wrap;
+      word-break: break-word;
+      margin: 0;
+      font-size: 13px;
+      background: var(--pre-bg);
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px dashed var(--border-color);
+      color: var(--text);
+    }
+
+    .info {
+      margin: 12px 0;
+      font-size: 14px;
+      background: linear-gradient(90deg,#eef2ff,#f0f9ff);
+      padding: 10px;
+      border-radius: 10px;
+      border-left: 4px solid var(--primary-color);
+      color: var(--muted);
+    }
+
+    /* FIXED PANEL */
+    .fixo {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      width: 340px;
+      max-height: 360px;
+      overflow: auto;
+      background: var(--surface);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 12px;
+      box-shadow: 0 12px 40px rgba(2,6,23,0.12);
+      z-index: 999;
+      transition: transform .18s ease, opacity .18s;
+    }
+
+    .fixo h3 { margin:0 0 10px 0; font-size:16px; color: var(--error-color); display:flex; justify-content:space-between; align-items:center; gap:8px; }
+    .copiar {
+      font-size: 12px;
+      padding: 6px 10px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      background: var(--primary-color);
+      color: white;
+    }
+
+    .copy-inline {
+      float: right;
+      background: transparent;
+      border: 1px solid var(--border-color);
+      padding: 6px 8px;
+      border-radius: 8px;
+      cursor: pointer;
+      color: var(--primary-color);
+      font-weight: 600;
+    }
+
+    .hidden { display: none !important; opacity: 0; transform: translateY(6px); }
+
+    @media (max-width: 880px){
+      .fixo { position: static; width: 100%; max-height: 260px; margin-top: 12px; }
+      body { padding: 16px; }
+    }
+
+
+.footer {
+  margin-top: 40px;
+  display: flex;
+  justify-content: center;
+}
+
+.footer-content {
+  width: 100%;
+  max-width: 1400px;
+  padding: 15px 25px;
+  border-radius: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #6366f1;
+}
+
+/* efeito glass (se quiser manter o estilo moderno) */
+.glass {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+/* lados */
+.footer-left,
+.footer-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ícones */
+.footer-left i {
+  color: #ff4d4d;
+}
+
+.footer-right i {
+  color: #ffd700;
+}
+
+
+  </style>
+</head>
+<body>
+  <div class="wrap" id="wrap">
+    <header class="header">
+      <div class="title">
+        <h2>🧾 Verificador de Processos Duplicados</h2>
+        <div class="muted" style="font-size:13px;margin-left:6px;">Cole o conteúdo da tela de recebimento</div>
+      </div>
+
+      <!-- Toggle light/dark -->
+      <div>
+        <button id="themeToggle" class="theme-toggle" aria-pressed="false" title="Alternar tema">
+          <span id="themeIcon">🌙</span>
+          <span id="themeLabel">Dark</span>
+        </button>
+      </div>
+    </header>
+
+    <textarea id="entrada" placeholder="Cole aqui após copiar a folha da tela de recebimento inteira (Ctrl + A)..."></textarea>
+
+    <div class="topo">
+      <button class="btn btn-primary" onclick="analisar()">🔍 Analisar</button>
+      <button id="resetButton" class="btn btn-ghost" onclick="resetForm()">↺ Resetar</button>
+      <button class="btn btn-success" onclick="copiarTodos()">📋 Copiar todos (números)</button>
+    </div>
+
+    <div class="info" id="info"></div>
+
+    <!-- BLOCO FIXO DOS DUPLICADOS -->
+    <div class="fixo hidden" id="fixoDuplicados" aria-live="polite">
+      <h3>🔴 Duplicados <button class="copiar" onclick="copiarDuplicados()">Copiar</button></h3>
+      <pre id="duplicados">Nenhum duplicado encontrado.</pre>
+    </div>
+
+    <!-- BLOCO LISTA COMPLETA -->
+    <div class="bloco" aria-live="polite">
+      <h2 style="font-size:16px; color:var(--primary-color);">🟢 Todos os processos:
+        <button class="copy-inline small-btn" onclick="copiarTodos()">Copiar</button>
+      </h2>
+      <pre id="unicos">Nenhum processo listado ainda.</pre>
+    </div>
+
+    <!-- NOVO CAMPO EXTRAÇÃO DE MENSAGENS -->
+    <div class="bloco">
+      <h2 style="font-size:16px; color:var(--primary-color);">📥 Extrair números de mensagens:</h2>
+
+      <textarea id="entradaMensagens" placeholder="Cole aqui mensagens como: Processo 10000252728456000 atualizado com sucesso!"></textarea>
+
+      <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="btn btn-primary small-btn" onclick="extrairMensagens()">🔎 Extrair</button>
+        <button class="btn btn-ghost small-btn" onclick="copiarMensagens()">📋 Copiar Números</button>
+      </div>
+
+      <div class="info" id="infoMensagens"></div>
+      <pre id="saidaMensagens">Nenhum número extraído ainda.</pre>
+    </div>
+
+<footer class="container">
+<div class="footer-content glass">
+<div class="footer-left">
+<i class="fas fa-heart" style="color: #ff4d4d;"></i>
+<span>Anna do HC • </span>
+</div>
+<div class="footer-right">
+<span>v2.0</span>
+<i class="fas fa-crown" style="color: #ffd700;"></i>
+</div>
+</div>
+</footer>
+
+
+
+
+  </div>
+
+  <script>
+    /* ===== Theme handling (persist & UI) ===== */
+    const root = document.documentElement;
+    const themeToggle = document.getElementById('themeToggle');
+    const themeIcon = document.getElementById('themeIcon');
+    const themeLabel = document.getElementById('themeLabel');
+
+    function applyTheme(theme) {
+      if (theme === 'dark') {
+        root.setAttribute('data-theme', 'dark');
+        themeIcon.textContent = '☀️';
+        themeLabel.textContent = 'Light';
+        themeToggle.setAttribute('aria-pressed', 'true');
+      } else {
+        root.removeAttribute('data-theme');
+        themeIcon.textContent = '🌙';
+        themeLabel.textContent = 'Dark';
+        themeToggle.setAttribute('aria-pressed', 'false');
+      }
+    }
+
+    // Initialize: check localStorage, else use prefers-color-scheme
+    (function initTheme() {
+      const saved = localStorage.getItem('vc_theme'); // 'light' | 'dark' | null
+      if (saved === 'dark') {
+        applyTheme('dark');
+      } else if (saved === 'light') {
+        applyTheme('light');
+      } else {
+        // use OS preference
+        const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        applyTheme(prefersDark ? 'dark' : 'light');
+      }
+    })();
+
+    themeToggle.addEventListener('click', () => {
+      const current = root.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+      const next = current === 'dark' ? 'light' : 'dark';
+      applyTheme(next);
+      localStorage.setItem('vc_theme', next);
+    });
+
+    /* ===== Existing app logic (fixed and improved) ===== */
+    let duplicadosNumeros = [];
+    let numerosExtraidos = [];
+
+    function analisar() {
+      const texto = document.getElementById("entrada").value || "";
+      // Regex para o formato que você usava: 1.0000.25.339.208-8/000
+      const regex = /\d{1,2}\.\d{4}\.\d{2}\.\d{3}\.\d{3}-\d\/\d{3}/g;
+      const encontrados = texto.match(regex) || [];
+
+      const contagem = {};
+      encontrados.forEach(num => {
+        contagem[num] = (contagem[num] || 0) + 1;
+      });
+
+      const unicos = Object.keys(contagem);
+      duplicadosNumeros = unicos.filter(num => contagem[num] > 1);
+
+      const total = encontrados.length;
+      const duplicadosTotal = duplicadosNumeros.reduce((acc, num) => acc + (contagem[num] - 1), 0);
+      const infoTexto = `
+🔢 Total colado: ${total}
+📌 Processos únicos: ${unicos.length}
+🚨 Duplicados: ${duplicadosNumeros.length} (${duplicadosTotal} repetições)
+      `;
+      document.getElementById("info").innerText = infoTexto.trim();
+
+      const todos = unicos.length > 0 ? unicos.map(num => `${num} (x${contagem[num]})`).join("\n") : "Nenhum processo listado ainda.";
+      document.getElementById("unicos").innerText = todos;
+
+      if (duplicadosNumeros.length > 0) {
+        const duplicadosTexto = duplicadosNumeros.map(num => `${num} (x${contagem[num]})`).join("\n");
+        document.getElementById("duplicados").innerText = duplicadosTexto;
+        document.getElementById("fixoDuplicados").classList.remove('hidden');
+      } else {
+        document.getElementById("duplicados").innerText = "Nenhum duplicado encontrado.";
+        document.getElementById("fixoDuplicados").classList.add('hidden');
+      }
+
+      // rolar até o bloco de informações
+      const infoEl = document.getElementById("info");
+      if (infoEl) infoEl.scrollIntoView({behavior: 'smooth', block: 'center'});
+    }
+
+    function copiarDuplicados() {
+      if (!Array.isArray(duplicadosNumeros) || duplicadosNumeros.length === 0) {
+        alert("Não há duplicados para copiar.");
+        return;
+      }
+      const limpos = duplicadosNumeros.map(n => n.replace(/\D/g, "")); // remove tudo que não for número
+      const texto = limpos.join("\n");
+      navigator.clipboard.writeText(texto).then(() => {
+        alert("Duplicados copiados (apenas números)!");
+      }).catch(()=>{ alert("Falha ao copiar. Permita permissão de clipboard ou use Ctrl+C."); });
+    }
+
+    function resetForm() {
+      // limpa entradas
+      document.getElementById("entrada").value = "";
+      document.getElementById("entradaMensagens").value = "";
+
+      // limpa info e saídas
+      document.getElementById("info").innerText = "";
+      document.getElementById("unicos").innerText = "Nenhum processo listado ainda.";
+      document.getElementById("duplicados").innerText = "Nenhum duplicado encontrado.";
+      document.getElementById("saidaMensagens").innerText = "Nenhum número extraído ainda.";
+      document.getElementById("infoMensagens").innerText = "";
+
+      // esconde painel de duplicados
+      document.getElementById("fixoDuplicados").classList.add('hidden');
+
+      // reseta variáveis internas
+      duplicadosNumeros = [];
+      numerosExtraidos = [];
+
+      // scroll to top
+      window.scrollTo({top: 0, behavior: 'smooth'});
+    }
+
+    // ===== CORREÇÃO: extrairMensagens (usando a variável correta) =====
+    function extrairMensagens() {
+      const texto = document.getElementById("entradaMensagens").value || "";
+      // pega sequências numéricas longas (5+ dígitos) — ajuste o mínimo se quiser pegar só processos longos
+      const encontrados = texto.match(/\d{5,}/g) || [];
+      numerosExtraidos = Array.from(encontrados);
+
+      if (numerosExtraidos.length > 0) {
+        document.getElementById("saidaMensagens").innerText = numerosExtraidos.join("\n");
+        document.getElementById("infoMensagens").innerText = `🔎 Total de números extraídos: ${numerosExtraidos.length}`;
+      } else {
+        document.getElementById("saidaMensagens").innerText = "Nenhum número encontrado.";
+        document.getElementById("infoMensagens").innerText = "";
+      }
+    }
+
+    function copiarMensagens() {
+      if (!Array.isArray(numerosExtraidos) || numerosExtraidos.length === 0) {
+        alert("Nenhum número para copiar.");
+        return;
+      }
+      navigator.clipboard.writeText(numerosExtraidos.join("\n")).then(() => {
+        alert("Números copiados!");
+      }).catch(()=>{ alert("Falha ao copiar. Permita permissão de clipboard ou use Ctrl+C."); });
+    }
+
+    function copiarTodos() {
+      const texto = document.getElementById("unicos").innerText;
+      if (!texto || texto.trim()==="" || texto.includes("Nenhum processo")) {
+        alert("Não há processos para copiar.");
+        return;
+      }
+      // pega só os números (remove o " (x1)" etc)
+      const somenteNumeros = texto.split("\n").map(linha => linha.split(" ")[0]);
+      navigator.clipboard.writeText(somenteNumeros.join("\n")).then(() => {
+        alert("Todos os números copiados (sem contagem)!");
+      }).catch(()=>{ alert("Falha ao copiar. Permita permissão de clipboard ou use Ctrl+C."); });
+    }
+  </script>
+</body>
+</html>
