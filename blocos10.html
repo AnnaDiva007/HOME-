@@ -131,6 +131,34 @@
             transform: scale(0.97);
         }
 
+        .btn-mpmg {
+            background: linear-gradient(135deg, #1a5276, #2e86c1);
+            border: none;
+            padding: 14px 28px;
+            border-radius: 60px;
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+            letter-spacing: 0.3px;
+            cursor: pointer;
+            transition: 0.2s ease;
+            box-shadow: 0 6px 18px rgba(26, 82, 118, 0.25);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn-mpmg:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 28px rgba(26, 82, 118, 0.35);
+            background: linear-gradient(135deg, #154360, #2471a3);
+        }
+
+        .btn-mpmg:active {
+            transform: scale(0.97);
+        }
+
         .total-badge {
             background: #eef5fa;
             padding: 10px 24px;
@@ -238,6 +266,13 @@
             border-color: #cfe0ed;
         }
 
+        .toolbar-right {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 12px;
+        }
+
         /* toast de copiado */
         .toast {
             position: fixed;
@@ -286,8 +321,13 @@
                 flex-direction: column;
                 align-items: stretch;
             }
-            .btn-primary {
+            .toolbar-right {
+                flex-direction: column;
+                width: 100%;
+            }
+            .btn-primary, .btn-mpmg {
                 justify-content: center;
+                width: 100%;
             }
             .bloco-header {
                 flex-direction: column;
@@ -296,6 +336,9 @@
             .resultado {
                 font-size: 0.8rem;
                 padding: 14px;
+            }
+            .total-badge {
+                justify-content: center;
             }
         }
     </style>
@@ -316,8 +359,13 @@
             <button class="btn-primary" onclick="processar()">
                 <span>▶</span> Processar
             </button>
-            <div class="total-badge" id="total">
-                📋 Total: <strong id="contador">0</strong>
+            <div class="toolbar-right">
+                <a class="btn-mpmg" href="https://aplicacao.mpmg.mp.br/scpj/f/t/gedoc/atualizarpecasman" target="_blank">
+                    📄 Sincronizar peças - SCPJ
+                </a>
+                <div class="total-badge" id="total">
+                    📋 Total: <strong id="contador">0</strong>
+                </div>
             </div>
         </div>
     </div>
