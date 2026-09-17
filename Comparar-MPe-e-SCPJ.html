@@ -5,11 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cruzador de Processos - Físicos x CSV</title>
     <link rel="stylesheet" href="comparar.css">
-    
-       <!-- PDF.js (local) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.10.111/pdf.min.js
-"></script>
-    <!-- PapaParse (CDN) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.10.111/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 </head>
 <body>
@@ -19,7 +15,6 @@
             <p class="subtitulo">Processos <strong>FÍSICOS</strong> do PDF × Processos do CSV</p>
         </header>
 
-        <!-- Upload -->
         <section class="upload-area">
             <div class="upload-box">
                 <label for="csvInput">📄 Arquivo CSV</label>
@@ -38,13 +33,11 @@
             </button>
         </section>
 
-        <!-- Loading -->
         <div id="loading" class="loading hidden">
             <div class="spinner"></div>
             <p id="loadingText">Processando...</p>
         </div>
 
-        <!-- Resultados -->
         <section id="resultados" class="hidden">
             <div class="cards">
                 <div class="card card-azul">
@@ -65,7 +58,6 @@
                 </div>
             </div>
 
-            <!-- Filtros -->
             <div class="filtros">
                 <button class="filtro ativo" data-filtro="todos">Todos</button>
                 <button class="filtro" data-filtro="encontrados">✅ Encontrados</button>
@@ -75,7 +67,6 @@
                 <button id="btnExportar" class="btn-exportar">📥 Exportar CSV</button>
             </div>
 
-            <!-- Tabela -->
             <div class="tabela-wrapper">
                 <table id="tabelaResultado">
                     <thead>
@@ -92,6 +83,6 @@
         </section>
     </div>
 
-    <script src="Comparar.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
