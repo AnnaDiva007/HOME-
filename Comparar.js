@@ -7,18 +7,12 @@ if (typeof pdfjsLib !== 'undefined') {
     console.error('❌ PDF.js NÃO carregou!');
 }
 
-// ==========================================
-// ESTADO GLOBAL
-// ==========================================
 let dadosCsv = [];
 let dadosPdf = [];
 let resultado = [];
 let filtroAtual = 'todos';
 let buscaAtual = '';
 
-// ==========================================
-// ELEMENTOS DOM
-// ==========================================
 const csvInput = document.getElementById('csvInput');
 const pdfInput = document.getElementById('pdfInput');
 const csvStatus = document.getElementById('csvStatus');
@@ -29,9 +23,6 @@ const loadingText = document.getElementById('loadingText');
 const resultados = document.getElementById('resultados');
 const tbody = document.getElementById('tbodyResultado');
 
-// ==========================================
-// UTILIDADES
-// ==========================================
 function limparNumero(str) {
     if (!str) return '';
     return String(str).replace(/[.\-\/\s]/g, '').trim();
@@ -47,9 +38,6 @@ function esconderLoading() {
     loading.classList.add('hidden');
 }
 
-// ==========================================
-// UPLOAD
-// ==========================================
 csvInput.addEventListener('change', (e) => {
     const f = e.target.files[0];
     csvStatus.textContent = f ? `✅ ${f.name}` : 'Nenhum arquivo';
@@ -68,9 +56,6 @@ function verificarBotao() {
     btnProcessar.disabled = !(csvInput.files[0] && pdfInput.files[0]);
 }
 
-// ==========================================
-// PROCESSAR CSV
-// ==========================================
 function processarCsv(file) {
     return new Promise((resolve, reject) => {
         Papa.parse(file, {
@@ -100,13 +85,12 @@ function processarCsv(file) {
 }
 
 // ==========================================
-// PROCESSAR PDF (por coordenadas X/Y)
+// PROCESSAR PDF - via layout XY (mesma linha visual)
 // ==========================================
 async function processarPdf(file) {
     console.log('📕 Iniciando leitura do PDF...');
     const arrayBuffer = await file.arrayBuffer();
     const pdf = await pdfjsLib.getDocument({ data: arrayBuffer, disableWorker: true }).promise;
-
     console.log(`📕 PDF carregado: ${pdf.numPages} páginas`);
 
     const fisicosEncontrados = [];
@@ -114,38 +98,34 @@ async function processarPdf(file) {
 
     for (let i = 1; i <= pdf.numPages; i++) {
         loadingText.textContent = `📖 Lendo PDF: página ${i} de ${pdf.numPages}...`;
-
         const page = await pdf.getPage(i);
         const textContent = await page.getTextContent();
 
-        // Agrupa os itens de texto por linha (mesma coordenada Y aproximada)
-        const linhasMap = new Map();
-        textContent.items.forEach(item => {
-            if (!item.str || !item.str.trim()) return;
-            const y = Math.round(item.transform[5]);
+        // Agrupa por Y com tolerância maior
+        const linhas = [];
+        const itens = textContent.items.filter(it => it.str && it.str.trim());
+        itens.forEach(item => {
+            const y = item.transform[5];
             const x = item.transform[4];
-            // Agrupa Y com tolerância de 2px
-            let chaveY = null;
-            for (const k of linhasMap.keys()) {
-                if (Math.abs(k - y) <= 2) { chaveY = k; break; }
+            let linha = linhas.find(l => Math.abs(l.y - y) < 5);
+            if (!linha) {
+                linha = { y, itens: [] };
+                linhas.push(linha);
             }
-            if (chaveY === null) chaveY = y;
-            if (!linhasMap.has(chaveY)) linhasMap.set(chaveY, []);
-            linhasMap.get(chaveY).push({ x, str: item.str });
+            linha.itens.push({ x, str: item.str });
         });
 
-        // Ordena as linhas de cima pra baixo
-        const ys = Array.from(linhasMap.keys()).sort((a, b) => b - a);
+        // Ordena linhas de cima pra baixo
+        linhas.sort((a, b) => b.y - a.y);
 
-        ys.forEach(y => {
-            const itens = linhasMap.get(y).sort((a, b) => a.x - b.x);
-            const linha = itens.map(it => it.str).join(' ').replace(/\s+/g, ' ').trim();
+        let fisicosNaPagina = 0;
+        linhas.forEach(linha => {
+            linha.itens.sort((a, b) => a.x - b.x);
+            const textoLinha = linha.itens.map(it => it.str).join(' ').replace(/\s+/g, ' ');
 
-            // Se a linha tem FISICO
-            if (!/\bFISICO\b/i.test(linha)) return;
+            if (!/FISICO/i.test(textoLinha)) return;
 
-            // Procura número do processo nessa linha
-            const matchNum = linha.match(/(\d[\d.\-\/]{13,}\d)/);
+            const matchNum = textoLinha.match(/(\d[\d.\-\/]{13,}\d)/);
             if (!matchNum) return;
 
             const numeroCru = matchNum[1];
@@ -154,28 +134,25 @@ async function processarPdf(file) {
             if (numeroLimpo.length < 15) return;
             if (numerosVistos.has(numeroLimpo)) return;
 
-            console.log(`   ✅ FÍSICO: ${numeroCru} → ${numeroLimpo}`);
             numerosVistos.add(numeroLimpo);
+            fisicosNaPagina++;
+            console.log(`   ✅ FÍSICO: ${numeroCru}`);
             fisicosEncontrados.push({
                 numeracaoOriginal: numeroCru,
                 numeracaoLimpa: numeroLimpo,
-                infoPdf: linha.substring(0, 200),
+                infoPdf: textoLinha.substring(0, 200),
                 pagina: i
             });
         });
 
-        console.log(`📄 Página ${i}: total acumulado ${fisicosEncontrados.length} físicos`);
+        console.log(`📄 Página ${i}: ${fisicosNaPagina} físicos`);
     }
 
-    console.log(`✅ PDF processado. Físicos encontrados: ${fisicosEncontrados.length}`);
+    console.log(`✅ Físicos encontrados: ${fisicosEncontrados.length}`);
     console.log('📋 Lista:', fisicosEncontrados);
-
     return fisicosEncontrados;
 }
 
-// ==========================================
-// CRUZAMENTO
-// ==========================================
 function cruzarDados() {
     const mapaCsv = new Map();
     dadosCsv.forEach(p => mapaCsv.set(p.numeracaoLimpa, p));
@@ -223,9 +200,6 @@ function cruzarDados() {
     return linhas;
 }
 
-// ==========================================
-// RENDERIZAÇÃO
-// ==========================================
 function renderizarCards() {
     document.getElementById('totalPdf').textContent = dadosPdf.length;
     document.getElementById('totalEncontrados').textContent =
@@ -313,9 +287,6 @@ function renderizarTabela() {
     });
 }
 
-// ==========================================
-// FILTROS E BUSCA
-// ==========================================
 document.querySelectorAll('.filtro').forEach(btn => {
     btn.addEventListener('click', () => {
         document.querySelectorAll('.filtro').forEach(b => b.classList.remove('ativo'));
@@ -330,9 +301,6 @@ document.getElementById('busca').addEventListener('input', (e) => {
     renderizarTabela();
 });
 
-// ==========================================
-// BOTÃO PROCESSAR
-// ==========================================
 btnProcessar.addEventListener('click', async () => {
     try {
         const csvFile = csvInput.files[0];
@@ -362,9 +330,6 @@ btnProcessar.addEventListener('click', async () => {
     }
 });
 
-// ==========================================
-// EXPORTAR CSV
-// ==========================================
 document.getElementById('btnExportar').addEventListener('click', () => {
     if (!resultado.length) {
         alert('Nada para exportar.');
