@@ -105,7 +105,7 @@ function processarCsv(file) {
 async function processarPdf(file) {
     console.log('📕 Iniciando leitura do PDF...');
     const arrayBuffer = await file.arrayBuffer();
-    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer, disableWorker: true }).promise;
 
     console.log(`📕 PDF carregado: ${pdf.numPages} páginas`);
 
@@ -123,14 +123,12 @@ async function processarPdf(file) {
             .join(' ')
             .replace(/\s+/g, ' ');
 
-        // DEBUG: mostra texto bruto da página 1
         if (i === 1) {
-            console.log('📝 TEXTO BRUTO PÁGINA 1 (primeiros 1500 chars):');
+            console.log('📝 TEXTO BRUTO PÁGINA 1:');
             console.log(textoPagina.substring(0, 1500));
         }
 
-        // Regex: aceita pontos, traços, barras e espaços entre dígitos
-        const regexNumero = /\b(\d[\d.\-\/\s]{10,}\d)\b/g;
+        const regexNumero = /\b(\d[\d.\-\/]{10,}\d)\b/g;
         const matches = [...textoPagina.matchAll(regexNumero)];
 
         console.log(`📄 Página ${i}: ${matches.length} números encontrados`);
@@ -392,4 +390,4 @@ document.getElementById('btnExportar').addEventListener('click', () => {
     URL.revokeObjectURL(url);
 });
 
-console.log('✅ script.js carregado com sucesso');
+console.log('✅ Comparar.js carregado com sucesso');
