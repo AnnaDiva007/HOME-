@@ -123,38 +123,27 @@ async function processarPdf(file) {
             .join(' ')
             .replace(/\s+/g, ' ');
 
-        if (i === 1) {
-            console.log('📝 TEXTO BRUTO PÁGINA 1:');
-            console.log(textoPagina.substring(0, 1500));
-        }
+        // Regex direta: número seguido de FISICO (em até 100 chars)
+        const regexFisico = /(\d[\d.\-\/]{13,}\d)[^\d]{0,100}?FISICO/gi;
+        const matches = [...textoPagina.matchAll(regexFisico)];
 
-        const regexNumero = /\b(\d[\d.\-\/]{10,}\d)\b/g;
-        const matches = [...textoPagina.matchAll(regexNumero)];
-
-        console.log(`📄 Página ${i}: ${matches.length} números encontrados`);
+        console.log(`📄 Página ${i}: ${matches.length} físicos encontrados`);
 
         matches.forEach(match => {
-            const numeroCru = match[0];
+            const numeroCru = match[1];
             const numeroLimpo = limparNumero(numeroCru);
 
             if (numeroLimpo.length < 15) return;
             if (numerosVistos.has(numeroLimpo)) return;
 
-            const posNum = match.index;
-            const contexto = textoPagina
-                .substring(Math.max(0, posNum - 50), posNum + numeroCru.length + 200)
-                .toUpperCase();
-
-            if (contexto.includes('FISICO')) {
-                console.log(`   ✅ FÍSICO: ${numeroCru} → ${numeroLimpo}`);
-                numerosVistos.add(numeroLimpo);
-                fisicosEncontrados.push({
-                    numeracaoOriginal: numeroCru,
-                    numeracaoLimpa: numeroLimpo,
-                    infoPdf: contexto.substring(0, 200),
-                    pagina: i
-                });
-            }
+            console.log(`   ✅ FÍSICO: ${numeroCru} → ${numeroLimpo}`);
+            numerosVistos.add(numeroLimpo);
+            fisicosEncontrados.push({
+                numeracaoOriginal: numeroCru,
+                numeracaoLimpa: numeroLimpo,
+                infoPdf: match[0].substring(0, 200),
+                pagina: i
+            });
         });
     }
 
