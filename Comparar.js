@@ -123,8 +123,8 @@ async function processarPdf(file) {
             linha.itens.sort((a, b) => a.x - b.x);
             const textoLinha = linha.itens.map(it => it.str).join(' ').replace(/\s+/g, ' ');
 
-            if (!/FISICO/i.test(textoLinha)) return;
-
+if (!/F[IÍ]SICO/i.test(textoLinha)) return;
+            
             const matchNum = textoLinha.match(/(\d[\d.\-\/]{13,}\d)/);
             if (!matchNum) return;
 
