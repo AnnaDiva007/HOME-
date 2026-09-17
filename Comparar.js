@@ -2,8 +2,9 @@
 // CONFIGURAÇÃO PDF.js
 // ==========================================
 if (typeof pdfjsLib !== 'undefined') {
-pdfjsLib.GlobalWorkerOptions.workerSrc = 'pdf.worker.min.js';
-    console.log('✅ PDF.js carregado');
+    console.log('✅ PDF.js carregado (sem worker)');
+}
+
 } else {
     console.error('❌ PDF.js NÃO carregou!');
 }
