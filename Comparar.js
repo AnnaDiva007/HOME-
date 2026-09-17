@@ -1,5 +1,5 @@
 // ==========================================
-// CONFIGURAÇÃO PDF.js
+// CONFIGURAÇÃO PDF.js (sem worker)
 // ==========================================
 if (typeof pdfjsLib !== 'undefined') {
     console.log('✅ PDF.js carregado (sem worker)');
@@ -100,7 +100,7 @@ function processarCsv(file) {
 }
 
 // ==========================================
-// PROCESSAR PDF - versão com DEBUG
+// PROCESSAR PDF
 // ==========================================
 async function processarPdf(file) {
     console.log('📕 Iniciando leitura do PDF...');
@@ -123,9 +123,14 @@ async function processarPdf(file) {
             .join(' ')
             .replace(/\s+/g, ' ');
 
-        // 🔥 Nova regex: aceita pontos, traços e barras entre dígitos
-        // Ex.: 1.0000.26.496.599-7/000  ou  28274206520268130000
-        const regexNumero = /\b(\d[\d.\-\/]{10,}\d)\b/g;
+        // DEBUG: mostra texto bruto da página 1
+        if (i === 1) {
+            console.log('📝 TEXTO BRUTO PÁGINA 1 (primeiros 1500 chars):');
+            console.log(textoPagina.substring(0, 1500));
+        }
+
+        // Regex: aceita pontos, traços, barras e espaços entre dígitos
+        const regexNumero = /\b(\d[\d.\-\/\s]{10,}\d)\b/g;
         const matches = [...textoPagina.matchAll(regexNumero)];
 
         console.log(`📄 Página ${i}: ${matches.length} números encontrados`);
@@ -134,17 +139,14 @@ async function processarPdf(file) {
             const numeroCru = match[0];
             const numeroLimpo = limparNumero(numeroCru);
 
-            // Ignora se muito curto (não é processo)
             if (numeroLimpo.length < 15) return;
             if (numerosVistos.has(numeroLimpo)) return;
 
-            // Olha o contexto (200 caracteres ao redor)
             const posNum = match.index;
             const contexto = textoPagina
                 .substring(Math.max(0, posNum - 50), posNum + numeroCru.length + 200)
                 .toUpperCase();
 
-            // Se tem FISICO no contexto → é físico
             if (contexto.includes('FISICO')) {
                 console.log(`   ✅ FÍSICO: ${numeroCru} → ${numeroLimpo}`);
                 numerosVistos.add(numeroLimpo);
