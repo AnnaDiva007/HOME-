@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cruzador de Processos - Físicos x CSV</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- PDF.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <!-- PapaParse -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔍 Cruzador de Processos</h1>
+            <p class="subtitulo">Processos <strong>FÍSICOS</strong> do PDF × Processos do CSV</p>
+        </header>
+
+        <!-- Upload -->
+        <section class="upload-area">
+            <div class="upload-box">
+                <label for="csvInput">📄 Arquivo CSV</label>
+                <input type="file" id="csvInput" accept=".csv">
+                <span id="csvStatus" class="status">Nenhum arquivo selecionado</span>
+            </div>
+
+            <div class="upload-box">
+                <label for="pdfInput">📕 Arquivo PDF</label>
+                <input type="file" id="pdfInput" accept=".pdf">
+                <span id="pdfStatus" class="status">Nenhum arquivo selecionado</span>
+            </div>
+
+            <button id="btnProcessar" class="btn-principal" disabled>
+                🚀 Processar Cruzamento
+            </button>
+        </section>
+
+        <!-- Loading -->
+        <div id="loading" class="loading hidden">
+            <div class="spinner"></div>
+            <p id="loadingText">Processando...</p>
+        </div>
+
+        <!-- Resultados -->
+        <section id="resultados" class="hidden">
+            <div class="cards">
+                <div class="card card-azul">
+                    <span class="card-num" id="totalPdf">0</span>
+                    <span class="card-label">Físicos no PDF</span>
+                </div>
+                <div class="card card-verde">
+                    <span class="card-num" id="totalEncontrados">0</span>
+                    <span class="card-label">✅ Encontrados no CSV</span>
+                </div>
+                <div class="card card-vermelho">
+                    <span class="card-num" id="totalNaoEncontrados">0</span>
+                    <span class="card-label">❌ NÃO ENCONTRADOS</span>
+                </div>
+                <div class="card card-cinza">
+                    <span class="card-num" id="totalCsv">0</span>
+                    <span class="card-label">📄 Total no CSV</span>
+                </div>
+            </div>
+
+            <!-- Filtros -->
+            <div class="filtros">
+                <button class="filtro ativo" data-filtro="todos">Todos</button>
+                <button class="filtro" data-filtro="encontrados">✅ Encontrados</button>
+                <button class="filtro" data-filtro="nao_encontrados">❌ Não Encontrados</button>
+                <button class="filtro" data-filtro="csv_sobrando">📄 Só no CSV</button>
+                <input type="text" id="busca" placeholder="🔎 Buscar número...">
+                <button id="btnExportar" class="btn-exportar">📥 Exportar CSV</button>
+            </div>
+
+            <!-- Tabela -->
+            <div class="tabela-wrapper">
+                <table id="tabelaResultado">
+                    <thead>
+                        <tr>
+                            <th>Nº Processo (PDF)</th>
+                            <th>Status</th>
+                            <th>Membro / Info PDF</th>
+                            <th>Dados do CSV</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbodyResultado"></tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
