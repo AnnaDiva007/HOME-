@@ -1,15 +1,20 @@
 // ==========================================
 // CONFIGURAÇÃO PDF.js
 // ==========================================
-pdfjsLib.GlobalWorkerOptions.workerSrc =
-    'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+if (typeof pdfjsLib !== 'undefined') {
+    pdfjsLib.GlobalWorkerOptions.workerSrc =
+        'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    console.log('✅ PDF.js carregado');
+} else {
+    console.error('❌ PDF.js NÃO carregou!');
+}
 
 // ==========================================
 // ESTADO GLOBAL
 // ==========================================
-let dadosCsv = [];        // Processos do CSV
-let dadosPdf = [];        // Processos FÍSICOS do PDF
-let resultado = [];       // Resultado final do cruzamento
+let dadosCsv = [];
+let dadosPdf = [];
+let resultado = [];
 let filtroAtual = 'todos';
 let buscaAtual = '';
 
@@ -45,7 +50,7 @@ function esconderLoading() {
 }
 
 // ==========================================
-// UPLOAD - HABILITAR BOTÃO
+// UPLOAD
 // ==========================================
 csvInput.addEventListener('change', (e) => {
     const f = e.target.files[0];
@@ -97,53 +102,64 @@ function processarCsv(file) {
 }
 
 // ==========================================
-// PROCESSAR PDF - extrair APENAS físicos
+// PROCESSAR PDF - versão com DEBUG
 // ==========================================
 async function processarPdf(file) {
+    console.log('📕 Iniciando leitura do PDF...');
     const arrayBuffer = await file.arrayBuffer();
     const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
 
+    console.log(`📕 PDF carregado: ${pdf.numPages} páginas`);
+
     const fisicosEncontrados = [];
+    const numerosVistos = new Set();
 
     for (let i = 1; i <= pdf.numPages; i++) {
         loadingText.textContent = `📖 Lendo PDF: página ${i} de ${pdf.numPages}...`;
+        console.log(`📄 Processando página ${i}/${pdf.numPages}`);
 
         const page = await pdf.getPage(i);
         const textContent = await page.getTextContent();
 
-        // Agrupar itens por linha (aproximando pela posição Y)
-        const linhasMap = new Map();
-        textContent.items.forEach(item => {
-            if (!item.str || !item.str.trim()) return;
-            const y = Math.round(item.transform[5]);
-            if (!linhasMap.has(y)) linhasMap.set(y, []);
-            linhasMap.get(y).push({ x: item.transform[4], str: item.str });
-        });
+        // Junta TODO o texto da página
+        const textoPagina = textContent.items
+            .map(item => item.str)
+            .join(' ')
+            .replace(/\s+/g, ' ');
 
-        // Ordenar por Y (topo -> base) e X (esquerda -> direita)
-        const ys = Array.from(linhasMap.keys()).sort((a, b) => b - a);
+        // DEBUG: mostra o texto da página 1
+        if (i === 1) {
+            console.log('📝 TEXTO BRUTO PÁGINA 1 (primeiros 1500 chars):');
+            console.log(textoPagina.substring(0, 1500));
+        }
 
-        ys.forEach(y => {
-            const itens = linhasMap.get(y).sort((a, b) => a.x - b.x);
-            const linha = itens.map(it => it.str).join(' ').trim();
+        // Pega todos os números longos (15+ dígitos)
+        const todosNumeros = textoPagina.match(/\d{15,}/g) || [];
+        console.log(`   Números longos na pág ${i}:`, todosNumeros.slice(0, 10));
 
-            // Procura por número longo (>=15 dígitos) seguido de FISICO
-            // Regex: número com 15+ dígitos, permitindo pontos/barra
-            const match = linha.match(/(\d[\d.\-\/]{14,}\d)\s+FISICO\b/i);
-            if (match) {
-                const numeroCru = match[1];
-                const numeroLimpo = limparNumero(numeroCru);
+        // Para cada número, olha o contexto
+        todosNumeros.forEach(numero => {
+            if (numerosVistos.has(numero)) return;
 
-                // Guardar linha completa como info adicional
+            const posNum = textoPagina.indexOf(numero);
+            const contexto = textoPagina
+                .substring(posNum, posNum + numero.length + 250)
+                .toUpperCase();
+
+            if (contexto.includes('FISICO')) {
+                numerosVistos.add(numero);
                 fisicosEncontrados.push({
-                    numeracaoOriginal: numeroCru,
-                    numeracaoLimpa: numeroLimpo,
-                    infoPdf: linha.replace(/\s+/g, ' ').substring(0, 200),
+                    numeracaoOriginal: numero,
+                    numeracaoLimpa: numero,
+                    infoPdf: contexto.substring(0, 200),
                     pagina: i
                 });
             }
         });
     }
+
+    console.log(`✅ PDF processado. Físicos encontrados: ${fisicosEncontrados.length}`);
+    console.log('📋 Lista de físicos:', fisicosEncontrados);
 
     return fisicosEncontrados;
 }
@@ -158,10 +174,8 @@ function cruzarDados() {
     const numerosCsvUsados = new Set();
     const linhas = [];
 
-    // 1) Para cada FÍSICO do PDF, procurar no CSV
     dadosPdf.forEach(pdfProc => {
         const encontrado = mapaCsv.get(pdfProc.numeracaoLimpa);
-
         if (encontrado) {
             numerosCsvUsados.add(pdfProc.numeracaoLimpa);
             linhas.push({
@@ -184,7 +198,6 @@ function cruzarDados() {
         }
     });
 
-    // 2) Processos do CSV que NÃO apareceram no PDF
     dadosCsv.forEach(csvProc => {
         if (!numerosCsvUsados.has(csvProc.numeracaoLimpa)) {
             linhas.push({
@@ -205,37 +218,30 @@ function cruzarDados() {
 // RENDERIZAÇÃO
 // ==========================================
 function renderizarCards() {
-    const totalPdf = dadosPdf.length;
-    const totalEncontrados = resultado.filter(r => r.tipo === 'encontrado').length;
-    const totalNao = resultado.filter(r => r.tipo === 'nao_encontrado').length;
-    const totalCsv = dadosCsv.length;
-
-    document.getElementById('totalPdf').textContent = totalPdf;
-    document.getElementById('totalEncontrados').textContent = totalEncontrados;
-    document.getElementById('totalNaoEncontrados').textContent = totalNao;
-    document.getElementById('totalCsv').textContent = totalCsv;
+    document.getElementById('totalPdf').textContent = dadosPdf.length;
+    document.getElementById('totalEncontrados').textContent =
+        resultado.filter(r => r.tipo === 'encontrado').length;
+    document.getElementById('totalNaoEncontrados').textContent =
+        resultado.filter(r => r.tipo === 'nao_encontrado').length;
+    document.getElementById('totalCsv').textContent = dadosCsv.length;
 }
 
 function filtrarResultado() {
     return resultado.filter(item => {
-        // Filtro por tipo
         if (filtroAtual === 'encontrados' && item.tipo !== 'encontrado') return false;
         if (filtroAtual === 'nao_encontrados' && item.tipo !== 'nao_encontrado') return false;
         if (filtroAtual === 'csv_sobrando' && item.tipo !== 'csv_sobrando') return false;
 
-        // Busca por texto
         if (buscaAtual) {
             const alvo = buscaAtual.toLowerCase();
             const texto = (
-                item.numeroPdf + ' ' +
-                item.numeroLimpo + ' ' +
+                item.numeroPdf + ' ' + item.numeroLimpo + ' ' +
                 (item.csv?.numeracaoOriginal || '') + ' ' +
                 (item.csv?.membro || '') + ' ' +
                 (item.csv?.orgao || '')
             ).toLowerCase();
             if (!texto.includes(alvo)) return false;
         }
-
         return true;
     });
 }
@@ -245,25 +251,22 @@ function renderizarTabela() {
     tbody.innerHTML = '';
 
     if (itens.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:30px;color:#888;">Nenhum registro encontrado com os filtros atuais.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:30px;color:#888;">Nenhum registro.</td></tr>`;
         return;
     }
 
     itens.forEach(item => {
         const tr = document.createElement('tr');
-
         if (item.tipo === 'encontrado') tr.className = 'linha-ok';
         else if (item.tipo === 'nao_encontrado') tr.className = 'linha-nao';
         else tr.className = 'linha-csv';
 
-        // Coluna 1: Nº processo (PDF)
         const tdNumPdf = document.createElement('td');
         tdNumPdf.innerHTML = `
             <span class="mono">${item.numeroPdf}</span>
             ${item.tipo !== 'csv_sobrando' ? '<span class="badge badge-fis">FÍSICO</span>' : ''}
         `;
 
-        // Coluna 2: Status
         const tdStatus = document.createElement('td');
         if (item.tipo === 'encontrado') {
             tdStatus.innerHTML = '<span class="badge badge-ok">✅ ENCONTRADO</span>';
@@ -273,14 +276,12 @@ function renderizarTabela() {
             tdStatus.innerHTML = '<span class="badge badge-csv">📄 SÓ NO CSV</span>';
         }
 
-        // Coluna 3: Info do PDF
         const tdInfoPdf = document.createElement('td');
         tdInfoPdf.innerHTML = `
             <div style="font-size:0.8rem;color:#666;">${item.infoPdf || '—'}</div>
             ${item.pagina !== '—' ? `<small style="color:#999;">pág. ${item.pagina}</small>` : ''}
         `;
 
-        // Coluna 4: Dados do CSV
         const tdCsv = document.createElement('td');
         if (item.csv) {
             tdCsv.innerHTML = `
@@ -330,8 +331,9 @@ btnProcessar.addEventListener('click', async () => {
 
         mostrarLoading('📄 Lendo CSV...');
         dadosCsv = await processarCsv(csvFile);
+        console.log(`✅ CSV processado: ${dadosCsv.length} processos`);
 
-        mostrarLoading('📕 Lendo PDF (isso pode demorar)...');
+        mostrarLoading('📕 Lendo PDF...');
         dadosPdf = await processarPdf(pdfFile);
 
         mostrarLoading('🔀 Cruzando dados...');
@@ -342,13 +344,11 @@ btnProcessar.addEventListener('click', async () => {
 
         esconderLoading();
         resultados.classList.remove('hidden');
-
-        // Scroll suave
         resultados.scrollIntoView({ behavior: 'smooth' });
 
     } catch (err) {
-        console.error(err);
-        alert('❌ Erro ao processar arquivos:\n' + err.message);
+        console.error('❌ ERRO:', err);
+        alert('❌ Erro ao processar:\n' + err.message);
         esconderLoading();
     }
 });
@@ -358,20 +358,15 @@ btnProcessar.addEventListener('click', async () => {
 // ==========================================
 document.getElementById('btnExportar').addEventListener('click', () => {
     if (!resultado.length) {
-        alert('Nada para exportar. Processe os arquivos primeiro.');
+        alert('Nada para exportar.');
         return;
     }
-
     const itens = filtrarResultado();
-
     const linhas = [['Nº Processo PDF', 'Nº Processo CSV', 'Status', 'Membro CSV', 'Órgão CSV', 'Finalidade CSV', 'Página PDF', 'Info PDF']];
-
     itens.forEach(item => {
-        let status = '';
-        if (item.tipo === 'encontrado') status = 'ENCONTRADO';
-        else if (item.tipo === 'nao_encontrado') status = 'NAO ENCONTRADO NO CSV';
-        else status = 'SOMENTE NO CSV';
-
+        let status = item.tipo === 'encontrado' ? 'ENCONTRADO'
+                   : item.tipo === 'nao_encontrado' ? 'NAO ENCONTRADO NO CSV'
+                   : 'SOMENTE NO CSV';
         linhas.push([
             item.numeroPdf,
             item.csv?.numeracaoOriginal || '',
@@ -383,17 +378,16 @@ document.getElementById('btnExportar').addEventListener('click', () => {
             item.infoPdf
         ]);
     });
-
-    // Montar CSV
     const csvContent = linhas.map(l =>
         l.map(c => `"${String(c).replace(/"/g, '""')}"`).join(';')
     ).join('\n');
-
     const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `cruzamento_processos_${new Date().toISOString().slice(0,10)}.csv`;
+    a.download = `cruzamento_${new Date().toISOString().slice(0,10)}.csv`;
     a.click();
     URL.revokeObjectURL(url);
 });
+
+console.log('✅ script.js carregado com sucesso');
