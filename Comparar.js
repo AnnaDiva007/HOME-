@@ -115,41 +115,43 @@ async function processarPdf(file) {
 
     for (let i = 1; i <= pdf.numPages; i++) {
         loadingText.textContent = `📖 Lendo PDF: página ${i} de ${pdf.numPages}...`;
-        console.log(`📄 Processando página ${i}/${pdf.numPages}`);
 
         const page = await pdf.getPage(i);
         const textContent = await page.getTextContent();
 
-        // Junta TODO o texto da página
         const textoPagina = textContent.items
             .map(item => item.str)
             .join(' ')
             .replace(/\s+/g, ' ');
 
-        // DEBUG: mostra o texto da página 1
-        if (i === 1) {
-            console.log('📝 TEXTO BRUTO PÁGINA 1 (primeiros 1500 chars):');
-            console.log(textoPagina.substring(0, 1500));
-        }
+        // 🔥 Nova regex: aceita pontos, traços e barras entre dígitos
+        // Ex.: 1.0000.26.496.599-7/000  ou  28274206520268130000
+        const regexNumero = /\b(\d[\d.\-\/]{10,}\d)\b/g;
+        const matches = [...textoPagina.matchAll(regexNumero)];
 
-        // Pega todos os números longos (15+ dígitos)
-        const todosNumeros = textoPagina.match(/\d{15,}/g) || [];
-        console.log(`   Números longos na pág ${i}:`, todosNumeros.slice(0, 10));
+        console.log(`📄 Página ${i}: ${matches.length} números encontrados`);
 
-        // Para cada número, olha o contexto
-        todosNumeros.forEach(numero => {
-            if (numerosVistos.has(numero)) return;
+        matches.forEach(match => {
+            const numeroCru = match[0];
+            const numeroLimpo = limparNumero(numeroCru);
 
-            const posNum = textoPagina.indexOf(numero);
+            // Ignora se muito curto (não é processo)
+            if (numeroLimpo.length < 15) return;
+            if (numerosVistos.has(numeroLimpo)) return;
+
+            // Olha o contexto (200 caracteres ao redor)
+            const posNum = match.index;
             const contexto = textoPagina
-                .substring(posNum, posNum + numero.length + 250)
+                .substring(Math.max(0, posNum - 50), posNum + numeroCru.length + 200)
                 .toUpperCase();
 
+            // Se tem FISICO no contexto → é físico
             if (contexto.includes('FISICO')) {
-                numerosVistos.add(numero);
+                console.log(`   ✅ FÍSICO: ${numeroCru} → ${numeroLimpo}`);
+                numerosVistos.add(numeroLimpo);
                 fisicosEncontrados.push({
-                    numeracaoOriginal: numero,
-                    numeracaoLimpa: numero,
+                    numeracaoOriginal: numeroCru,
+                    numeracaoLimpa: numeroLimpo,
                     infoPdf: contexto.substring(0, 200),
                     pagina: i
                 });
