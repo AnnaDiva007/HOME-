@@ -3,8 +3,6 @@
 // ==========================================
 if (typeof pdfjsLib !== 'undefined') {
     console.log('✅ PDF.js carregado (sem worker)');
-}
-
 } else {
     console.error('❌ PDF.js NÃO carregou!');
 }
