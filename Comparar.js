@@ -100,7 +100,7 @@ function processarCsv(file) {
 }
 
 // ==========================================
-// PROCESSAR PDF
+// PROCESSAR PDF (por coordenadas X/Y)
 // ==========================================
 async function processarPdf(file) {
     console.log('📕 Iniciando leitura do PDF...');
@@ -118,19 +118,37 @@ async function processarPdf(file) {
         const page = await pdf.getPage(i);
         const textContent = await page.getTextContent();
 
-        const textoPagina = textContent.items
-            .map(item => item.str)
-            .join(' ')
-            .replace(/\s+/g, ' ');
+        // Agrupa os itens de texto por linha (mesma coordenada Y aproximada)
+        const linhasMap = new Map();
+        textContent.items.forEach(item => {
+            if (!item.str || !item.str.trim()) return;
+            const y = Math.round(item.transform[5]);
+            const x = item.transform[4];
+            // Agrupa Y com tolerância de 2px
+            let chaveY = null;
+            for (const k of linhasMap.keys()) {
+                if (Math.abs(k - y) <= 2) { chaveY = k; break; }
+            }
+            if (chaveY === null) chaveY = y;
+            if (!linhasMap.has(chaveY)) linhasMap.set(chaveY, []);
+            linhasMap.get(chaveY).push({ x, str: item.str });
+        });
 
-        // Regex direta: número seguido de FISICO (em até 100 chars)
-        const regexFisico = /(\d[\d.\-\/]{13,}\d)[^\d]{0,100}?FISICO/gi;
-        const matches = [...textoPagina.matchAll(regexFisico)];
+        // Ordena as linhas de cima pra baixo
+        const ys = Array.from(linhasMap.keys()).sort((a, b) => b - a);
 
-        console.log(`📄 Página ${i}: ${matches.length} físicos encontrados`);
+        ys.forEach(y => {
+            const itens = linhasMap.get(y).sort((a, b) => a.x - b.x);
+            const linha = itens.map(it => it.str).join(' ').replace(/\s+/g, ' ').trim();
 
-        matches.forEach(match => {
-            const numeroCru = match[1];
+            // Se a linha tem FISICO
+            if (!/\bFISICO\b/i.test(linha)) return;
+
+            // Procura número do processo nessa linha
+            const matchNum = linha.match(/(\d[\d.\-\/]{13,}\d)/);
+            if (!matchNum) return;
+
+            const numeroCru = matchNum[1];
             const numeroLimpo = limparNumero(numeroCru);
 
             if (numeroLimpo.length < 15) return;
@@ -141,14 +159,16 @@ async function processarPdf(file) {
             fisicosEncontrados.push({
                 numeracaoOriginal: numeroCru,
                 numeracaoLimpa: numeroLimpo,
-                infoPdf: match[0].substring(0, 200),
+                infoPdf: linha.substring(0, 200),
                 pagina: i
             });
         });
+
+        console.log(`📄 Página ${i}: total acumulado ${fisicosEncontrados.length} físicos`);
     }
 
     console.log(`✅ PDF processado. Físicos encontrados: ${fisicosEncontrados.length}`);
-    console.log('📋 Lista de físicos:', fisicosEncontrados);
+    console.log('📋 Lista:', fisicosEncontrados);
 
     return fisicosEncontrados;
 }
