@@ -359,3 +359,21 @@ tr.linha-csv   { border-left: 3px solid #d68910; }
         padding: 20px;
     }
 }
+
+.btn-reiniciar {
+    margin-top: 12px;
+    padding: 6px 16px;
+    background: #fff;
+    color: #666;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.btn-reiniciar:hover {
+    border-color: #b03a2e;
+    color: #b03a2e;
+}
+
