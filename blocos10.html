@@ -4,367 +4,30 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Separador de Processos em Blocos de 10</title>
-
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            min-height: 100vh;
-            background: linear-gradient(145deg, #f6f9fc 0%, #e9f1f8 100%);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 24px;
-        }
-
-        .container {
-            max-width: 1100px;
-            width: 100%;
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-radius: 40px;
-            padding: 40px 48px;
-            box-shadow: 0 20px 60px rgba(0, 20, 40, 0.12), 0 8px 24px rgba(0, 0, 0, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            transition: all 0.2s ease;
-        }
-
-        h1 {
-            font-size: 2.2rem;
-            font-weight: 600;
-            letter-spacing: -0.3px;
-            color: #0b2a3b;
-            text-align: center;
-            margin-bottom: 28px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        h1 span {
-            background: linear-gradient(135deg, #1e6f9f, #2a9d8f);
-            padding: 4px 14px;
-            border-radius: 40px;
-            font-size: 1rem;
-            font-weight: 500;
-            color: white;
-            letter-spacing: 0.3px;
-        }
-
-        .card {
-            background: white;
-            border-radius: 28px;
-            padding: 24px 28px;
-            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.02), 0 2px 8px rgba(0, 20, 30, 0.04);
-            margin-bottom: 24px;
-            border: 1px solid rgba(255, 255, 255, 0.8);
-            transition: 0.25s ease;
-        }
-
-        .card:hover {
-            box-shadow: 0 12px 32px rgba(0, 30, 50, 0.08);
-        }
-
-        textarea {
-            width: 100%;
-            height: 200px;
-            padding: 18px 20px;
-            font-size: 0.95rem;
-            font-family: 'Segoe UI', 'Monaco', monospace;
-            border: 2px solid #e2ecf5;
-            border-radius: 20px;
-            background: #fafdff;
-            resize: vertical;
-            transition: 0.2s;
-            color: #12344a;
-            line-height: 1.6;
-        }
-
-        textarea:focus {
-            outline: none;
-            border-color: #2a9d8f;
-            box-shadow: 0 0 0 5px rgba(42, 157, 143, 0.15);
-            background: white;
-        }
-
-        .toolbar {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            justify-content: space-between;
-            margin-top: 18px;
-            gap: 12px;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #1e6f9f, #2a9d8f);
-            border: none;
-            padding: 14px 40px;
-            border-radius: 60px;
-            color: white;
-            font-weight: 600;
-            font-size: 1rem;
-            letter-spacing: 0.3px;
-            cursor: pointer;
-            transition: 0.2s ease;
-            box-shadow: 0 6px 18px rgba(30, 111, 159, 0.2);
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .btn-primary:hover {
-            transform: scale(1.02);
-            box-shadow: 0 10px 28px rgba(30, 111, 159, 0.3);
-            background: linear-gradient(135deg, #1b6290, #238b7e);
-        }
-
-        .btn-primary:active {
-            transform: scale(0.97);
-        }
-
-        .btn-mpmg {
-            background: linear-gradient(135deg, #1a5276, #2e86c1);
-            border: none;
-            padding: 14px 28px;
-            border-radius: 60px;
-            color: white;
-            font-weight: 600;
-            font-size: 1rem;
-            letter-spacing: 0.3px;
-            cursor: pointer;
-            transition: 0.2s ease;
-            box-shadow: 0 6px 18px rgba(26, 82, 118, 0.25);
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            text-decoration: none;
-        }
-
-        .btn-mpmg:hover {
-            transform: scale(1.02);
-            box-shadow: 0 10px 28px rgba(26, 82, 118, 0.35);
-            background: linear-gradient(135deg, #154360, #2471a3);
-        }
-
-        .btn-mpmg:active {
-            transform: scale(0.97);
-        }
-
-        .total-badge {
-            background: #eef5fa;
-            padding: 10px 24px;
-            border-radius: 60px;
-            font-weight: 500;
-            color: #1e4d66;
-            font-size: 1rem;
-            border: 1px solid #d6e4ef;
-            backdrop-filter: blur(4px);
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .total-badge strong {
-            font-weight: 700;
-            color: #0b2a3b;
-        }
-
-        .bloco-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 18px;
-            margin-top: 8px;
-        }
-
-        .bloco {
-            background: white;
-            border-radius: 24px;
-            padding: 18px 24px 22px;
-            border: 1px solid #e3edf6;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
-            transition: 0.2s;
-            animation: fadeSlide 0.3s ease both;
-        }
-
-        .bloco:hover {
-            border-color: #b6d2e8;
-            box-shadow: 0 8px 24px rgba(0, 30, 50, 0.06);
-        }
-
-        .bloco-header {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 12px;
-            gap: 10px;
-        }
-
-        .bloco-titulo {
-            font-weight: 600;
-            font-size: 1.1rem;
-            color: #1e4d66;
-            background: #e7f0f8;
-            padding: 4px 18px;
-            border-radius: 60px;
-            letter-spacing: -0.1px;
-            display: inline-block;
-        }
-
-        .btn-copy {
-            background: transparent;
-            border: 1.5px solid #c7dae9;
-            padding: 8px 22px;
-            border-radius: 60px;
-            font-weight: 500;
-            font-size: 0.85rem;
-            color: #1e5b7a;
-            cursor: pointer;
-            transition: 0.15s;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: #f8fcff;
-        }
-
-        .btn-copy:hover {
-            background: #1e6f9f;
-            border-color: #1e6f9f;
-            color: white;
-            box-shadow: 0 4px 12px rgba(30, 111, 159, 0.25);
-        }
-
-        .btn-copy:active {
-            transform: scale(0.94);
-        }
-
-        .resultado {
-            font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
-            font-size: 0.92rem;
-            background: #f7faff;
-            padding: 16px 20px;
-            border-radius: 18px;
-            border: 1px solid #e6eff7;
-            word-break: break-all;
-            line-height: 1.7;
-            color: #12344a;
-            margin-top: 4px;
-            transition: 0.2s;
-        }
-
-        .resultado:hover {
-            background: #f4fafe;
-            border-color: #cfe0ed;
-        }
-
-        .toolbar-right {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 12px;
-        }
-
-        /* toast de copiado */
-        .toast {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%) translateY(100px);
-            background: #0b2a3b;
-            color: #f0f9ff;
-            padding: 14px 32px;
-            border-radius: 60px;
-            font-weight: 500;
-            font-size: 0.95rem;
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
-            opacity: 0;
-            transition: 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-            pointer-events: none;
-            backdrop-filter: blur(6px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-
-        .toast.show {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-        }
-
-        @keyframes fadeSlide {
-            0% {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* responsivo */
-        @media (max-width: 640px) {
-            .container {
-                padding: 20px 16px;
-            }
-            h1 {
-                font-size: 1.6rem;
-            }
-            .toolbar {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            .toolbar-right {
-                flex-direction: column;
-                width: 100%;
-            }
-            .btn-primary, .btn-mpmg {
-                justify-content: center;
-                width: 100%;
-            }
-            .bloco-header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            .resultado {
-                font-size: 0.8rem;
-                padding: 14px;
-            }
-            .total-badge {
-                justify-content: center;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="estilos-blocos.css">
 </head>
 <body>
 
 <div class="container">
 
-    <h1>
-        ⚖️ Separador de Processos
-        <span>blocos de 10</span>
-    </h1>
+    <header>
+        <h1>Separador de Processos <span class="badge">Blocos de 10</span></h1>
+        <p class="subtitulo">Cole a lista de processos e separe em blocos de 10</p>
+    </header>
 
-    <div class="card">
-        <textarea id="entrada" placeholder="Cole aqui a lista de processos…"></textarea>
+    <div class="card-input">
+        <textarea id="entrada" placeholder="Cole aqui a lista de processos..."></textarea>
 
         <div class="toolbar">
-            <button class="btn-primary" onclick="processar()">
-                <span>▶</span> Processar
+            <button class="btn-principal" onclick="processar()">
+                Processar
             </button>
             <div class="toolbar-right">
-                <a class="btn-mpmg" href="https://aplicacao.mpmg.mp.br/scpj/f/t/gedoc/atualizarpecasman" target="_blank">
-                    📄 Sincronizar peças - SCPJ
+                <a class="btn-secundario" href="https://aplicacao.mpmg.mp.br/scpj/f/t/gedoc/atualizarpecasman" target="_blank">
+                    Sincronizar peças - SCPJ
                 </a>
-                <div class="total-badge" id="total">
-                    📋 Total: <strong id="contador">0</strong>
+                <div class="total-badge">
+                    Total: <strong id="contador">0</strong>
                 </div>
             </div>
         </div>
@@ -374,8 +37,7 @@
 
 </div>
 
-<!-- toast -->
-<div id="toast" class="toast">✅ Copiado!</div>
+<div id="toast" class="toast">Copiado!</div>
 
 <script>
     function processar() {
@@ -386,8 +48,7 @@
 
         let processos = texto.match(regex) || [];
 
-        const contador = document.getElementById("contador");
-        contador.textContent = processos.length;
+        document.getElementById("contador").textContent = processos.length;
 
         const saida = document.getElementById("saida");
         let html = "";
@@ -400,9 +61,9 @@
             html += `
                 <div class="bloco">
                     <div class="bloco-header">
-                        <span class="bloco-titulo">📌 Bloco ${numero}</span>
+                        <span class="bloco-titulo">Bloco ${numero}</span>
                         <button class="btn-copy" onclick="copiar('${blocoEscapado}')">
-                            📋 Copiar
+                            Copiar
                         </button>
                     </div>
                     <div class="resultado">${bloco}</div>
@@ -410,40 +71,30 @@
             `;
         }
 
-        saida.innerHTML = html || `<p style="padding: 24px; text-align: center; color: #5a7e97;">Nenhum processo encontrado.</p>`;
+        saida.innerHTML = html || `<p class="vazio">Nenhum processo encontrado.</p>`;
     }
 
     function copiar(texto) {
-        navigator.clipboard.writeText(texto).then(() => {
-            const toast = document.getElementById("toast");
-            toast.classList.add("show");
-            clearTimeout(window._toastTimer);
-            window._toastTimer = setTimeout(() => {
-                toast.classList.remove("show");
-            }, 2000);
-        }).catch(() => {
-            // fallback
+        navigator.clipboard.writeText(texto).then(mostrarToast).catch(() => {
             const area = document.createElement("textarea");
             area.value = texto;
             document.body.appendChild(area);
             area.select();
             document.execCommand("copy");
             document.body.removeChild(area);
-
-            const toast = document.getElementById("toast");
-            toast.classList.add("show");
-            clearTimeout(window._toastTimer);
-            window._toastTimer = setTimeout(() => {
-                toast.classList.remove("show");
-            }, 2000);
+            mostrarToast();
         });
     }
 
-    // Opcional: processar ao colar com Ctrl+Enter
+    function mostrarToast() {
+        const toast = document.getElementById("toast");
+        toast.classList.add("show");
+        clearTimeout(window._toastTimer);
+        window._toastTimer = setTimeout(() => toast.classList.remove("show"), 2000);
+    }
+
     document.getElementById("entrada").addEventListener("keydown", function(e) {
-        if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
-            processar();
-        }
+        if ((e.ctrlKey || e.metaKey) && e.key === "Enter") processar();
     });
 </script>
 
