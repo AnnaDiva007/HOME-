@@ -58,14 +58,17 @@
                 </div>
             </div>
 
-            <div class="filtros">
-                <button class="filtro ativo" data-filtro="todos">Todos</button>
-                <button class="filtro" data-filtro="encontrados">✅ Encontrados</button>
-                <button class="filtro" data-filtro="nao_encontrados">❌ Não Encontrados</button>
-                <button class="filtro" data-filtro="csv_sobrando">📄 Só no CSV</button>
-                <input type="text" id="busca" placeholder="🔎 Buscar número...">
-                <button id="btnExportar" class="btn-exportar">📥 Exportar CSV</button>
-            </div>
+    <div class="filtros">
+    <button class="filtro ativo" data-filtro="todos">Todos</button>
+    <button class="filtro" data-filtro="encontrados">Encontrados</button>
+    <button class="filtro" data-filtro="nao_encontrados">Não Encontrados</button>
+    <button class="filtro" data-filtro="csv_sobrando">Só no MPe</button>
+    <select id="filtroFinalidade" class="select-finalidade">
+        <option value="">Todas as finalidades</option>
+    </select>
+    <input type="text" id="busca" placeholder="Buscar número...">
+    <button id="btnExportar" class="btn-exportar">Exportar CSV</button>
+</div>
 
             <div class="tabela-wrapper">
                 <table id="tabelaResultado">
