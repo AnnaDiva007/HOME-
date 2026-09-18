@@ -11,26 +11,26 @@
 <body>
     <div class="container">
         <header>
-            <h1>🔍 Cruzador de Processos</h1>
-            <p class="subtitulo">Processos <strong>SCPJ</strong> do PDF × Processos do MPe - CSV</p>
-                <button id="btnReiniciar" class="btn-reiniciar">Reiniciar</button>
+            <h1>Cruzador de Processos</h1>
+            <p class="subtitulo">Processos físicos do SCPJ × Processos do MPe</p>
+            <button id="btnReiniciar" class="btn-reiniciar">Reiniciar</button>
         </header>
 
         <section class="upload-area">
             <div class="upload-box">
-                <label for="csvInput">📄 Arquivo CSV</label>
+                <label for="csvInput">Arquivo CSV (MPe)</label>
                 <input type="file" id="csvInput" accept=".csv">
                 <span id="csvStatus" class="status">Nenhum arquivo selecionado</span>
             </div>
 
             <div class="upload-box">
-                <label for="pdfInput">📕 Arquivo PDF</label>
+                <label for="pdfInput">Arquivo PDF (SCPJ)</label>
                 <input type="file" id="pdfInput" accept=".pdf">
                 <span id="pdfStatus" class="status">Nenhum arquivo selecionado</span>
             </div>
 
             <button id="btnProcessar" class="btn-principal" disabled>
-                🚀 Processar Cruzamento
+                Processar Cruzamento
             </button>
         </section>
 
@@ -43,42 +43,42 @@
             <div class="cards">
                 <div class="card card-azul">
                     <span class="card-num" id="totalPdf">0</span>
-                    <span class="card-label">Físicos no PDF</span>
+                    <span class="card-label">Físicos no SCPJ</span>
                 </div>
                 <div class="card card-verde">
                     <span class="card-num" id="totalEncontrados">0</span>
-                    <span class="card-label">✅ Encontrados no CSV</span>
+                    <span class="card-label">Encontrados no MPe</span>
                 </div>
                 <div class="card card-vermelho">
                     <span class="card-num" id="totalNaoEncontrados">0</span>
-                    <span class="card-label">❌ NÃO ENCONTRADOS</span>
+                    <span class="card-label">Não encontrados no MPe</span>
                 </div>
                 <div class="card card-cinza">
                     <span class="card-num" id="totalCsv">0</span>
-                    <span class="card-label">📄 Total no CSV</span>
+                    <span class="card-label">Total no MPe</span>
                 </div>
             </div>
 
-    <div class="filtros">
-    <button class="filtro ativo" data-filtro="todos">Todos</button>
-    <button class="filtro" data-filtro="encontrados">Encontrados</button>
-    <button class="filtro" data-filtro="nao_encontrados">Não Encontrados</button>
-    <button class="filtro" data-filtro="csv_sobrando">Só no MPe</button>
-    <select id="filtroFinalidade" class="select-finalidade">
-        <option value="">Todas as finalidades</option>
-    </select>
-    <input type="text" id="busca" placeholder="Buscar número...">
-    <button id="btnExportar" class="btn-exportar">Exportar CSV</button>
-</div>
+            <div class="filtros">
+                <button class="filtro ativo" data-filtro="todos">Todos</button>
+                <button class="filtro" data-filtro="encontrados">Encontrados</button>
+                <button class="filtro" data-filtro="nao_encontrados">Não Encontrados</button>
+                <button class="filtro" data-filtro="csv_sobrando">Só no MPe</button>
+                <select id="filtroFinalidade" class="select-finalidade">
+                    <option value="">Todas as finalidades</option>
+                </select>
+                <input type="text" id="busca" placeholder="Buscar número...">
+                <button id="btnExportar" class="btn-exportar">Exportar CSV</button>
+            </div>
 
             <div class="tabela-wrapper">
                 <table id="tabelaResultado">
                     <thead>
                         <tr>
-                            <th>Nº Processo (PDF)</th>
+                            <th>Nº Processo (SCPJ)</th>
                             <th>Status</th>
-                            <th>Membro / Info PDF</th>
-                            <th>Dados do CSV</th>
+                            <th>Info SCPJ</th>
+                            <th>Dados do MPe</th>
                         </tr>
                     </thead>
                     <tbody id="tbodyResultado"></tbody>
