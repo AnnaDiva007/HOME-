@@ -248,7 +248,7 @@ function renderizarTabela() {
         const tdNumPdf = document.createElement('td');
         tdNumPdf.innerHTML = `
             <span class="mono">${item.numeroPdf}</span>
-            ${item.tipo !== 'csv_sobrando' ? '<span class="badge badge-fis">FÍSICO</span>' : ''}
+            ${item.tipo !== 'csv_sobrando' ? '<span class="badge badge-fis">SCPJ</span>' : ''}
         `;
 
         const tdStatus = document.createElement('td');
