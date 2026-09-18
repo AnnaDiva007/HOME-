@@ -6,7 +6,7 @@
 }
 
 body {
-    background: linear-gradient(135deg, #1e3c72, #2a5298);
+    background: #1e3c72;
     min-height: 100vh;
     padding: 20px;
     color: #333;
@@ -16,26 +16,28 @@ body {
     max-width: 1200px;
     margin: 0 auto;
     background: #fff;
-    border-radius: 16px;
+    border-radius: 12px;
     padding: 30px;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
 header {
     text-align: center;
     margin-bottom: 30px;
     padding-bottom: 20px;
-    border-bottom: 2px solid #eee;
+    border-bottom: 1px solid #e5e5e5;
 }
 
 h1 {
     color: #1e3c72;
     margin-bottom: 8px;
+    font-size: 1.6rem;
+    font-weight: 600;
 }
 
 .subtitulo {
     color: #666;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
 }
 
 /* Upload */
@@ -47,74 +49,65 @@ h1 {
 }
 
 .upload-box {
-    border: 2px dashed #bbb;
-    border-radius: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
     padding: 20px;
     text-align: center;
-    transition: all 0.3s;
     background: #fafafa;
-}
-
-.upload-box:hover {
-    border-color: #2a5298;
-    background: #f0f4ff;
 }
 
 .upload-box label {
     display: block;
-    font-weight: bold;
+    font-weight: 600;
     margin-bottom: 10px;
     color: #1e3c72;
-    font-size: 1.05rem;
+    font-size: 0.95rem;
 }
 
 .upload-box input[type="file"] {
     display: block;
     margin: 0 auto 10px;
-    padding: 8px;
+    padding: 6px;
     border-radius: 6px;
     border: 1px solid #ddd;
     background: #fff;
     cursor: pointer;
     width: 100%;
     max-width: 280px;
+    font-size: 0.85rem;
 }
 
 .status {
     display: block;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     color: #888;
-    font-style: italic;
     margin-top: 5px;
 }
 
 .status.ok {
-    color: #27ae60;
-    font-style: normal;
+    color: #2c7a4b;
     font-weight: 600;
 }
 
 .btn-principal {
     grid-column: 1 / -1;
-    padding: 15px;
-    background: #27ae60;
+    padding: 14px;
+    background: #1e3c72;
     color: #fff;
     border: none;
-    border-radius: 10px;
-    font-size: 1.1rem;
-    font-weight: bold;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: background 0.2s;
 }
 
 .btn-principal:hover:not(:disabled) {
-    background: #219150;
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(39, 174, 96, 0.4);
+    background: #16305c;
 }
 
 .btn-principal:disabled {
-    background: #ccc;
+    background: #c5c9d1;
     cursor: not-allowed;
 }
 
@@ -125,10 +118,10 @@ h1 {
 }
 
 .spinner {
-    width: 50px;
-    height: 50px;
-    border: 5px solid #f3f3f3;
-    border-top: 5px solid #2a5298;
+    width: 40px;
+    height: 40px;
+    border: 3px solid #eee;
+    border-top: 3px solid #1e3c72;
     border-radius: 50%;
     margin: 0 auto 15px;
     animation: girar 1s linear infinite;
@@ -146,99 +139,124 @@ h1 {
 .cards {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 15px;
+    gap: 12px;
     margin-bottom: 25px;
 }
 
 .card {
-    padding: 20px;
-    border-radius: 12px;
+    padding: 18px;
+    border-radius: 8px;
     text-align: center;
-    color: #fff;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    background: #f7f8fa;
+    border: 1px solid #e5e5e5;
+    border-left: 4px solid #1e3c72;
 }
 
 .card-num {
     display: block;
-    font-size: 2.2rem;
-    font-weight: bold;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #1e3c72;
     margin-bottom: 5px;
 }
 
 .card-label {
-    font-size: 0.9rem;
-    opacity: 0.95;
+    font-size: 0.85rem;
+    color: #666;
 }
 
-.card-azul     { background: linear-gradient(135deg, #3498db, #2980b9); }
-.card-verde    { background: linear-gradient(135deg, #2ecc71, #27ae60); }
-.card-vermelho { background: linear-gradient(135deg, #e74c3c, #c0392b); }
-.card-cinza    { background: linear-gradient(135deg, #7f8c8d, #5d6d7e); }
+.card-verde    { border-left-color: #2c7a4b; }
+.card-verde .card-num { color: #2c7a4b; }
+
+.card-vermelho { border-left-color: #b03a2e; }
+.card-vermelho .card-num { color: #b03a2e; }
+
+.card-cinza    { border-left-color: #7f8c8d; }
+.card-cinza .card-num { color: #5d6d7e; }
 
 /* Filtros */
 .filtros {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 8px;
     margin-bottom: 20px;
     align-items: center;
 }
 
 .filtro {
-    padding: 8px 16px;
-    border: 2px solid #ddd;
+    padding: 7px 14px;
+    border: 1px solid #ddd;
     background: #fff;
-    border-radius: 20px;
+    border-radius: 6px;
     cursor: pointer;
-    font-weight: 600;
-    transition: all 0.2s;
+    font-weight: 500;
+    font-size: 0.85rem;
+    color: #555;
+    transition: all 0.15s;
 }
 
 .filtro:hover {
-    border-color: #2a5298;
-    color: #2a5298;
+    border-color: #1e3c72;
+    color: #1e3c72;
 }
 
 .filtro.ativo {
-    background: #2a5298;
+    background: #1e3c72;
     color: #fff;
-    border-color: #2a5298;
+    border-color: #1e3c72;
+}
+
+.select-finalidade {
+    padding: 7px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    background: #fff;
+    color: #555;
+    cursor: pointer;
+}
+
+.select-finalidade:focus {
+    outline: none;
+    border-color: #1e3c72;
 }
 
 #busca {
     flex: 1;
-    min-width: 200px;
-    padding: 8px 15px;
-    border: 2px solid #ddd;
-    border-radius: 20px;
-    font-size: 0.95rem;
+    min-width: 180px;
+    padding: 7px 14px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 0.85rem;
 }
 
 #busca:focus {
     outline: none;
-    border-color: #2a5298;
+    border-color: #1e3c72;
 }
 
 .btn-exportar {
-    padding: 8px 20px;
-    background: #f39c12;
-    color: #fff;
-    border: none;
-    border-radius: 20px;
-    font-weight: bold;
+    padding: 7px 18px;
+    background: #fff;
+    color: #1e3c72;
+    border: 1px solid #1e3c72;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.85rem;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: all 0.15s;
 }
 
 .btn-exportar:hover {
-    background: #e67e22;
+    background: #1e3c72;
+    color: #fff;
 }
 
 /* Tabela */
 .tabela-wrapper {
     overflow-x: auto;
-    border-radius: 10px;
-    border: 1px solid #eee;
+    border-radius: 8px;
+    border: 1px solid #e5e5e5;
     max-height: 500px;
     overflow-y: auto;
 }
@@ -246,7 +264,7 @@ h1 {
 table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
 }
 
 thead {
@@ -263,41 +281,73 @@ th, td {
     border-bottom: 1px solid #eee;
 }
 
+th {
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
 tbody tr:hover {
-    background: #f8faff;
+    background: #f7f8fa;
 }
 
-tr.linha-ok {
-    background: #eafaf1;
-    border-left: 4px solid #27ae60;
-}
-
-tr.linha-nao {
-    background: #fdecea;
-    border-left: 4px solid #e74c3c;
-}
-
-tr.linha-csv {
-    background: #fef5e7;
-    border-left: 4px solid #f39c12;
-}
+tr.linha-ok    { border-left: 3px solid #2c7a4b; }
+tr.linha-nao   { border-left: 3px solid #b03a2e; }
+tr.linha-csv   { border-left: 3px solid #d68910; }
 
 .badge {
     display: inline-block;
-    padding: 4px 10px;
-    border-radius: 12px;
-    font-size: 0.8rem;
-    font-weight: bold;
+    padding: 3px 10px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
 }
 
-.badge-ok   { background: #27ae60; color: #fff; }
-.badge-nao  { background: #e74c3c; color: #fff; }
-.badge-csv  { background: #f39c12; color: #fff; }
-.badge-fis  { background: #8e44ad; color: #fff; font-size: 0.7rem; margin-left: 5px; }
+.badge-ok   { background: #e8f5ec; color: #2c7a4b; border: 1px solid #b7dcc4; }
+.badge-nao  { background: #fbecea; color: #b03a2e; border: 1px solid #e8b9b3; }
+.badge-csv  { background: #fdf3e3; color: #a06a10; border: 1px solid #ebd1a3; }
+.badge-fis  { background: #eef1f7; color: #1e3c72; border: 1px solid #c5cfe0; margin-left: 6px; }
 
 .mono {
     font-family: 'Consolas', 'Courier New', monospace;
-    font-size: 0.85rem;
+    font-size: 0.82rem;
+}
+
+.info-pdf {
+    font-size: 0.78rem;
+    color: #666;
+    line-height: 1.4;
+}
+
+.pag {
+    color: #999;
+    font-size: 0.75rem;
+}
+
+.num-csv {
+    font-weight: 700;
+    color: #1e3c72;
+}
+
+.info-csv {
+    font-size: 0.78rem;
+    color: #555;
+    margin-top: 4px;
+    line-height: 1.5;
+}
+
+.nao-mpe {
+    color: #b03a2e;
+    font-weight: 600;
+    font-size: 0.82rem;
+}
+
+.vazio {
+    text-align: center;
+    padding: 30px;
+    color: #888;
 }
 
 /* Responsivo */
