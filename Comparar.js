@@ -391,4 +391,40 @@ document.getElementById('btnExportar').addEventListener('click', () => {
     URL.revokeObjectURL(url);
 });
 
+
+document.getElementById('btnReiniciar').addEventListener('click', () => {
+    csvInput.value = '';
+    pdfInput.value = '';
+    csvStatus.textContent = 'Nenhum arquivo selecionado';
+    pdfStatus.textContent = 'Nenhum arquivo selecionado';
+    csvStatus.classList.remove('ok');
+    pdfStatus.classList.remove('ok');
+    dadosCsv = [];
+    dadosPdf = [];
+    resultado = [];
+    filtroAtual = 'todos';
+    filtroFinalidade = '';
+    buscaAtual = '';
+    document.querySelectorAll('.filtro').forEach(b => b.classList.remove('ativo'));
+    document.querySelector('.filtro[data-filtro="todos"]').classList.add('ativo');
+    filtroFinalidadeEl.value = '';
+    document.getElementById('busca').value = '';
+    tbody.innerHTML = '';
+    resultados.classList.add('hidden');
+    verificarBotao();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
 console.log('Comparar.js carregado com sucesso');
