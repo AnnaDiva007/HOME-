@@ -255,9 +255,9 @@ function renderizarTabela() {
         if (item.tipo === 'encontrado') {
             tdStatus.innerHTML = '<span class="badge badge-ok">✅ ENCONTRADO</span>';
         } else if (item.tipo === 'nao_encontrado') {
-            tdStatus.innerHTML = '<span class="badge badge-nao">❌ NÃO ENCONTRADO NO CSV</span>';
+            tdStatus.innerHTML = '<span class="badge badge-nao">❌ NÃO ENCONTRADO NO MPe</span>';
         } else {
-            tdStatus.innerHTML = '<span class="badge badge-csv">📄 SÓ NO CSV</span>';
+            tdStatus.innerHTML = '<span class="badge badge-csv">📄 SÓ NO MPe</span>';
         }
 
         const tdInfoPdf = document.createElement('td');
@@ -277,7 +277,7 @@ function renderizarTabela() {
                 </div>
             `;
         } else {
-            tdCsv.innerHTML = '<span style="color:#c0392b;font-weight:bold;">⚠️ Não localizado no CSV</span>';
+            tdCsv.innerHTML = '<span style="color:#c0392b;font-weight:bold;">⚠️ Não localizado no MPe</span>';
         }
 
         tr.appendChild(tdNumPdf);
@@ -340,8 +340,8 @@ document.getElementById('btnExportar').addEventListener('click', () => {
     const linhas = [['Nº Processo PDF', 'Nº Processo CSV', 'Status', 'Membro CSV', 'Órgão CSV', 'Finalidade CSV', 'Página PDF', 'Info PDF']];
     itens.forEach(item => {
         let status = item.tipo === 'encontrado' ? 'ENCONTRADO'
-                   : item.tipo === 'nao_encontrado' ? 'NAO ENCONTRADO NO CSV'
-                   : 'SOMENTE NO CSV';
+                   : item.tipo === 'nao_encontrado' ? 'NAO ENCONTRADO NO MPe'
+                   : 'SOMENTE NO MPe';
         linhas.push([
             item.numeroPdf,
             item.csv?.numeracaoOriginal || '',
