@@ -2,15 +2,16 @@
 // CONFIGURAÇÃO PDF.js (sem worker)
 // ==========================================
 if (typeof pdfjsLib !== 'undefined') {
-    console.log('✅ PDF.js carregado (sem worker)');
+    console.log('PDF.js carregado (sem worker)');
 } else {
-    console.error('❌ PDF.js NÃO carregou!');
+    console.error('PDF.js NÃO carregou!');
 }
 
 let dadosCsv = [];
 let dadosPdf = [];
 let resultado = [];
 let filtroAtual = 'todos';
+let filtroFinalidade = '';
 let buscaAtual = '';
 
 const csvInput = document.getElementById('csvInput');
@@ -22,6 +23,7 @@ const loading = document.getElementById('loading');
 const loadingText = document.getElementById('loadingText');
 const resultados = document.getElementById('resultados');
 const tbody = document.getElementById('tbodyResultado');
+const filtroFinalidadeEl = document.getElementById('filtroFinalidade');
 
 function limparNumero(str) {
     if (!str) return '';
@@ -40,14 +42,14 @@ function esconderLoading() {
 
 csvInput.addEventListener('change', (e) => {
     const f = e.target.files[0];
-    csvStatus.textContent = f ? `✅ ${f.name}` : 'Nenhum arquivo';
+    csvStatus.textContent = f ? f.name : 'Nenhum arquivo selecionado';
     csvStatus.classList.toggle('ok', !!f);
     verificarBotao();
 });
 
 pdfInput.addEventListener('change', (e) => {
     const f = e.target.files[0];
-    pdfStatus.textContent = f ? `✅ ${f.name}` : 'Nenhum arquivo';
+    pdfStatus.textContent = f ? f.name : 'Nenhum arquivo selecionado';
     pdfStatus.classList.toggle('ok', !!f);
     verificarBotao();
 });
@@ -85,23 +87,22 @@ function processarCsv(file) {
 }
 
 // ==========================================
-// PROCESSAR PDF - via layout XY (mesma linha visual)
+// PROCESSAR PDF
 // ==========================================
 async function processarPdf(file) {
-    console.log('📕 Iniciando leitura do PDF...');
+    console.log('Iniciando leitura do PDF...');
     const arrayBuffer = await file.arrayBuffer();
     const pdf = await pdfjsLib.getDocument({ data: arrayBuffer, disableWorker: true }).promise;
-    console.log(`📕 PDF carregado: ${pdf.numPages} páginas`);
+    console.log(`PDF carregado: ${pdf.numPages} páginas`);
 
     const fisicosEncontrados = [];
     const numerosVistos = new Set();
 
     for (let i = 1; i <= pdf.numPages; i++) {
-        loadingText.textContent = `📖 Lendo PDF: página ${i} de ${pdf.numPages}...`;
+        loadingText.textContent = `Lendo PDF: página ${i} de ${pdf.numPages}...`;
         const page = await pdf.getPage(i);
         const textContent = await page.getTextContent();
 
-        // Agrupa por Y com tolerância maior
         const linhas = [];
         const itens = textContent.items.filter(it => it.str && it.str.trim());
         itens.forEach(item => {
@@ -115,17 +116,15 @@ async function processarPdf(file) {
             linha.itens.push({ x, str: item.str });
         });
 
-        // Ordena linhas de cima pra baixo
         linhas.sort((a, b) => b.y - a.y);
 
         let fisicosNaPagina = 0;
         linhas.forEach(linha => {
             linha.itens.sort((a, b) => a.x - b.x);
             const textoLinha = linha.itens.map(it => it.str).join(' ').replace(/\s+/g, ' ');
-            
-if (i === 2 && /2827420/.test(textoLinha)) console.log('LINHA:', textoLinha);
-if (!/F[IÍ]SICO/i.test(textoLinha)) return;
-            
+
+            if (!/F[IÍ]SICO/i.test(textoLinha)) return;
+
             const matchNum = textoLinha.match(/(\d[\d.\-\/]{13,}\d)/);
             if (!matchNum) return;
 
@@ -137,7 +136,6 @@ if (!/F[IÍ]SICO/i.test(textoLinha)) return;
 
             numerosVistos.add(numeroLimpo);
             fisicosNaPagina++;
-            console.log(`   ✅ FÍSICO: ${numeroCru}`);
             fisicosEncontrados.push({
                 numeracaoOriginal: numeroCru,
                 numeracaoLimpa: numeroLimpo,
@@ -146,11 +144,10 @@ if (!/F[IÍ]SICO/i.test(textoLinha)) return;
             });
         });
 
-        console.log(`📄 Página ${i}: ${fisicosNaPagina} físicos`);
+        console.log(`Página ${i}: ${fisicosNaPagina} físicos`);
     }
 
-    console.log(`✅ Físicos encontrados: ${fisicosEncontrados.length}`);
-    console.log('📋 Lista:', fisicosEncontrados);
+    console.log(`Total de físicos: ${fisicosEncontrados.length}`);
     return fisicosEncontrados;
 }
 
@@ -210,11 +207,34 @@ function renderizarCards() {
     document.getElementById('totalCsv').textContent = dadosCsv.length;
 }
 
+function popularFiltroFinalidade() {
+    const finalidades = new Set();
+    resultado.forEach(item => {
+        if (item.csv && item.csv.finalidade && item.csv.finalidade !== '-') {
+            finalidades.add(item.csv.finalidade);
+        }
+    });
+
+    const atual = filtroFinalidadeEl.value;
+    filtroFinalidadeEl.innerHTML = '<option value="">Todas as finalidades</option>';
+    Array.from(finalidades).sort().forEach(f => {
+        const opt = document.createElement('option');
+        opt.value = f;
+        opt.textContent = f;
+        filtroFinalidadeEl.appendChild(opt);
+    });
+    filtroFinalidadeEl.value = atual;
+}
+
 function filtrarResultado() {
     return resultado.filter(item => {
         if (filtroAtual === 'encontrados' && item.tipo !== 'encontrado') return false;
         if (filtroAtual === 'nao_encontrados' && item.tipo !== 'nao_encontrado') return false;
         if (filtroAtual === 'csv_sobrando' && item.tipo !== 'csv_sobrando') return false;
+
+        if (filtroFinalidade) {
+            if (!item.csv || item.csv.finalidade !== filtroFinalidade) return false;
+        }
 
         if (buscaAtual) {
             const alvo = buscaAtual.toLowerCase();
@@ -235,7 +255,7 @@ function renderizarTabela() {
     tbody.innerHTML = '';
 
     if (itens.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:30px;color:#888;">Nenhum registro.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="4" class="vazio">Nenhum registro.</td></tr>`;
         return;
     }
 
@@ -253,31 +273,31 @@ function renderizarTabela() {
 
         const tdStatus = document.createElement('td');
         if (item.tipo === 'encontrado') {
-            tdStatus.innerHTML = '<span class="badge badge-ok">✅ ENCONTRADO</span>';
+            tdStatus.innerHTML = '<span class="badge badge-ok">Encontrado</span>';
         } else if (item.tipo === 'nao_encontrado') {
-            tdStatus.innerHTML = '<span class="badge badge-nao">❌ NÃO ENCONTRADO NO MPe</span>';
+            tdStatus.innerHTML = '<span class="badge badge-nao">Não encontrado no MPe</span>';
         } else {
-            tdStatus.innerHTML = '<span class="badge badge-csv">📄 SÓ NO MPe</span>';
+            tdStatus.innerHTML = '<span class="badge badge-csv">Somente no MPe</span>';
         }
 
         const tdInfoPdf = document.createElement('td');
         tdInfoPdf.innerHTML = `
-            <div style="font-size:0.8rem;color:#666;">${item.infoPdf || '—'}</div>
-            ${item.pagina !== '—' ? `<small style="color:#999;">pág. ${item.pagina}</small>` : ''}
+            <div class="info-pdf">${item.infoPdf || '—'}</div>
+            ${item.pagina !== '—' ? `<small class="pag">pág. ${item.pagina}</small>` : ''}
         `;
 
         const tdCsv = document.createElement('td');
         if (item.csv) {
             tdCsv.innerHTML = `
-                <div class="mono" style="font-weight:bold;color:#1e3c72;">${item.csv.numeracaoOriginal}</div>
-                <div style="font-size:0.8rem;color:#555;margin-top:3px;">
+                <div class="mono num-csv">${item.csv.numeracaoOriginal}</div>
+                <div class="info-csv">
                     <strong>Membro:</strong> ${item.csv.membro}<br>
                     <strong>Órgão:</strong> ${item.csv.orgao}<br>
                     <strong>Finalidade:</strong> ${item.csv.finalidade}
                 </div>
             `;
         } else {
-            tdCsv.innerHTML = '<span style="color:#c0392b;font-weight:bold;">⚠️ Não localizado no MPe</span>';
+            tdCsv.innerHTML = '<span class="nao-mpe">Não localizado no MPe</span>';
         }
 
         tr.appendChild(tdNumPdf);
@@ -297,6 +317,11 @@ document.querySelectorAll('.filtro').forEach(btn => {
     });
 });
 
+filtroFinalidadeEl.addEventListener('change', (e) => {
+    filtroFinalidade = e.target.value;
+    renderizarTabela();
+});
+
 document.getElementById('busca').addEventListener('input', (e) => {
     buscaAtual = e.target.value.trim();
     renderizarTabela();
@@ -307,17 +332,18 @@ btnProcessar.addEventListener('click', async () => {
         const csvFile = csvInput.files[0];
         const pdfFile = pdfInput.files[0];
 
-        mostrarLoading('📄 Lendo CSV...');
+        mostrarLoading('Lendo CSV...');
         dadosCsv = await processarCsv(csvFile);
-        console.log(`✅ CSV processado: ${dadosCsv.length} processos`);
+        console.log(`CSV: ${dadosCsv.length} processos`);
 
-        mostrarLoading('📕 Lendo PDF...');
+        mostrarLoading('Lendo PDF...');
         dadosPdf = await processarPdf(pdfFile);
 
-        mostrarLoading('🔀 Cruzando dados...');
+        mostrarLoading('Cruzando dados...');
         resultado = cruzarDados();
 
         renderizarCards();
+        popularFiltroFinalidade();
         renderizarTabela();
 
         esconderLoading();
@@ -325,8 +351,8 @@ btnProcessar.addEventListener('click', async () => {
         resultados.scrollIntoView({ behavior: 'smooth' });
 
     } catch (err) {
-        console.error('❌ ERRO:', err);
-        alert('❌ Erro ao processar:\n' + err.message);
+        console.error('ERRO:', err);
+        alert('Erro ao processar:\n' + err.message);
         esconderLoading();
     }
 });
@@ -365,4 +391,4 @@ document.getElementById('btnExportar').addEventListener('click', () => {
     URL.revokeObjectURL(url);
 });
 
-console.log('✅ Comparar.js carregado com sucesso');
+console.log('Comparar.js carregado com sucesso');
