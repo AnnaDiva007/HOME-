@@ -7,9 +7,22 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-
-
   <style>
+    :root {
+      --primary: #1e3c72;
+      --primary-dark: #16305c;
+      --accent: #eab308;
+      --accent-light: #fde047;
+      --muted: #6b7280;
+      --bg-page: #1e3c72;
+      --bg-card: #ffffff;
+      --bg-inner: #fafafa;
+      --border: #e5e5e5;
+      --ok: #2c7a4b;
+      --danger: #b03a2e;
+      --warning: #a06a10;
+    }
+
     * {
       margin: 0;
       padding: 0;
@@ -18,9 +31,10 @@
 
     body {
       font-family: 'Inter', sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: var(--bg-page);
       min-height: 100vh;
       padding: 40px 20px;
+      color: #333;
     }
 
     .main-container {
@@ -28,47 +42,53 @@
       margin: 0 auto;
     }
 
-    /* Título principal */
     h1 {
       text-align: center;
-      font-size: 2.5rem;
+      font-size: 2rem;
       font-weight: 700;
-      background: linear-gradient(135deg, #fff 0%, #e0d7ff 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      color: #fff;
       margin-bottom: 30px;
       letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
     }
 
-    /* Área de texto */
+    h1 i {
+      color: var(--accent);
+    }
+
     textarea {
       width: 100%;
       padding: 15px;
-      border: 2px solid #e0e0e0;
+      border: 1px solid var(--border);
       border-radius: 12px;
-      font-family: 'Inter', monospace;
+      font-family: 'Consolas', monospace;
       font-size: 14px;
       resize: vertical;
       transition: all 0.3s ease;
       margin-bottom: 15px;
+      background: #fff;
+      color: #333;
     }
+
+    textarea::placeholder { color: #999; }
 
     textarea:focus {
       outline: none;
-      border-color: #667eea;
-      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(30, 60, 114, 0.1);
     }
 
-    /* Botão principal */
     button {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: var(--primary);
       color: white;
       border: none;
       padding: 12px 30px;
       border-radius: 12px;
       font-size: 1rem;
-      font-weight: 600;
+      font-weight: 700;
       cursor: pointer;
       transition: all 0.3s ease;
       display: inline-flex;
@@ -77,28 +97,37 @@
     }
 
     button:hover {
+      background: var(--primary-dark);
       transform: translateY(-2px);
-      box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+      box-shadow: 0 10px 20px rgba(30, 60, 114, 0.3);
     }
 
-    /* Total de processos */
     h3 {
-      background: white;
+      background: #fff;
       padding: 15px 25px;
       border-radius: 12px;
       margin: 20px 0;
-      display: inline-block;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      border-left: 4px solid var(--accent);
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    h3 i {
+      color: var(--accent);
     }
 
     #total-geral {
-      font-size: 1.5rem;
+      font-size: 1.4rem;
       font-weight: 800;
-      color: #667eea;
-      margin-left: 10px;
+      color: var(--primary);
+      margin-left: 8px;
     }
 
-    /* Container dos cards */
     .container {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -106,174 +135,133 @@
       margin-top: 30px;
     }
 
-    /* Cards */
     .box {
-      background: white;
+      background: var(--bg-card);
       border-radius: 16px;
       overflow: hidden;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
       transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
     .box:hover {
       transform: translateY(-5px);
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
     }
 
     .box h2 {
-      padding: 20px;
+      padding: 18px 20px;
       margin: 0;
-      font-size: 1.2rem;
-      font-weight: 600;
+      font-size: 1rem;
+      font-weight: 700;
       display: flex;
       align-items: center;
       gap: 10px;
+      color: #fff;
     }
 
-    /* Cores dos headers */
     #recebidos h2 {
-      background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-      color: white;
+      background: linear-gradient(135deg, #16a34a, #22c55e);
     }
 
     #atualizados h2 {
-      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-      color: white;
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
     }
 
     #cancelados h2 {
-      background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-      color: white;
+      background: linear-gradient(135deg, #ca8a04, #eab308);
     }
 
     #erros h2 {
-      background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
-      color: white;
+      background: linear-gradient(135deg, #991b1b, #b03a2e);
     }
 
-    /* Contador */
     .contador {
       padding: 10px 20px;
-      background: #f8f9fa;
+      background: var(--bg-inner);
       font-weight: 600;
       color: #333;
-      border-bottom: 1px solid #e0e0e0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.85rem;
     }
+
+    .contador i { color: var(--primary); }
 
     .contador span {
-      color: #667eea;
-      font-size: 1.2rem;
+      color: var(--primary);
+      font-size: 1.1rem;
       margin-left: 5px;
+      font-weight: 700;
     }
 
-    /* Conteúdo */
     pre {
       padding: 20px;
       margin: 0;
-      font-family: 'Inter', monospace;
+      font-family: 'Consolas', monospace;
       font-size: 12px;
-      color: #555;
+      color: #333;
       white-space: pre-wrap;
       word-wrap: break-word;
       line-height: 1.6;
       max-height: 400px;
       overflow-y: auto;
-      background: #fafafa;
+      background: #fff;
     }
 
-    /* Scrollbar */
-    pre::-webkit-scrollbar {
-      width: 6px;
-    }
-
-    pre::-webkit-scrollbar-track {
-      background: #f1f1f1;
-    }
-
+    pre::-webkit-scrollbar { width: 8px; }
+    pre::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
     pre::-webkit-scrollbar-thumb {
-      background: #888;
+      background: var(--primary);
       border-radius: 10px;
     }
+    pre::-webkit-scrollbar-thumb:hover { background: var(--primary-dark); }
 
-    /* Botão copiar dentro do card */
     .box button {
       margin: 15px 20px;
       padding: 8px 20px;
-      background: #667eea;
-      font-size: 0.9rem;
+      background: var(--primary);
+      font-size: 0.85rem;
     }
 
     .box button:hover {
-      background: #5a67d8;
-      transform: translateY(-2px);
-      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+      background: var(--primary-dark);
     }
 
-    /* Responsivo */
-    @media (max-width: 768px) {
-      body {
-        padding: 20px;
-      }
-      
-      h1 {
-        font-size: 1.8rem;
-      }
-      
-      .container {
-        grid-template-columns: 1fr;
-        gap: 20px;
-      }
-    }
     .footer {
-  margin-top: 40px;
-  display: flex;
-  justify-content: center;
-}
+      margin-top: 40px;
+      display: flex;
+      justify-content: center;
+    }
 
-.footer-content {
-  width: 100%;
-  max-width: 1400px;
-  padding: 15px 25px;
-  border-radius: 16px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  color: white;
-}
+    .footer-content {
+      width: 100%;
+      max-width: 1400px;
+      padding: 15px 25px;
+      border-radius: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #fff;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    }
 
-/* efeito glass (se quiser manter o estilo moderno) */
-.glass {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-}
+    .footer-left,
+    .footer-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.85rem;
+    }
 
-/* lados */
-.footer-left,
-.footer-right {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
+    .footer-left i { color: #ff4d4d; }
+    .footer-right i { color: var(--accent); }
 
-/* ícones */
-.footer-left i {
-  color: #ff4d4d;
-}
-
-.footer-right i {
-  color: #ffd700;
-}
-
-
-
-
-
-
-
-
-
-
+    @media (max-width: 768px) {
+      body { padding: 20px; }
+      h1 { font-size: 1.5rem; }
+      .container { grid-template-columns: 1fr; gap: 20px; }
+    }
   </style>
 </head>
 <body>
@@ -281,19 +269,19 @@
   <h1>
     <i class="fas fa-tasks"></i> Classificação de Processos
   </h1>
-  
+
   <textarea id="texto-processos" placeholder="Cole aqui: Mensagens do processamento:" rows="10"></textarea>
-  
+
   <br>
   <button onclick="separarProcessos()">
     <i class="fas fa-magic"></i> Separar Processos
   </button>
-  
+
   <h3>
-    <i class="fas fa-chart-line"></i> Total de Processos: 
+    <i class="fas fa-chart-line"></i> Total de Processos:
     <span id="total-geral">0</span>
   </h3>
-  
+
   <div class="container">
     <div class="box" id="recebidos">
       <h2><i class="fas fa-check-circle"></i> Recebidos com Sucesso</h2>
@@ -340,22 +328,18 @@
     </div>
   </div>
 
-<footer class="container">
-<div class="footer-content glass">
-<div class="footer-left">
-<i class="fas fa-heart" style="color: #ff4d4d;"></i>
-<span>Anna do HC • </span>
-</div>
-<div class="footer-right">
-<span>v2.0</span>
-<i class="fas fa-crown" style="color: #ffd700;"></i>
-</div>
-</div>
-</footer>
-
-
-
-
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-left">
+        <i class="fas fa-heart"></i>
+        <span>Anna do HC</span>
+      </div>
+      <div class="footer-right">
+        <span>v2.0</span>
+        <i class="fas fa-crown"></i>
+      </div>
+    </div>
+  </footer>
 </div>
 
 <script>
@@ -413,10 +397,6 @@ function separarProcessos() {
 
   contarTodos();
 }
-
-
-
-
 
 contarTodos();
 </script>
