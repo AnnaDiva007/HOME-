@@ -10,7 +10,7 @@
       --accent: #eab308;
       --accent-light: #fde047;
       --muted: #6b7280;
-      --bg-page: #1e3c72;
+      --bg-page: #fafafa;
       --bg-card: #ffffff;
       --border: #e5e5e5;
     }
@@ -31,7 +31,7 @@
       position: relative;
       display: inline-block;
       font-size: 2.2rem;
-      color: #fff;
+      color: var(--primary);
       margin-bottom: 40px;
       font-weight: 700;
     }
@@ -64,7 +64,7 @@
     .natalia-flutuante {
       font-size: 1.4rem;
       font-weight: 700;
-      color: var(--accent);
+      color: var(--primary);
       animation: flutuar 3s ease-in-out infinite;
       opacity: 0;
       animation-fill-mode: forwards;
@@ -80,7 +80,7 @@
 
     .estrela {
       position: absolute;
-      background-color: #ffde59;
+      background-color: var(--accent);
       border-radius: 50%;
       animation: brilhar 2s infinite alternate;
     }
@@ -111,12 +111,13 @@
       padding: 22px;
       width: 240px;
       border-radius: 12px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--accent);
       transition: transform 0.3s, box-shadow 0.3s;
       opacity: 0;
       transform: translateY(30px);
       animation: aparecer 0.8s forwards;
-      border-left: 4px solid var(--accent);
       text-align: left;
     }
 
@@ -126,7 +127,7 @@
 
     .card:hover {
       transform: translateY(-8px);
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
     }
 
     .card h3 {
@@ -176,7 +177,7 @@
       background: #fff;
       padding: 15px 25px;
       border-radius: 10px;
-      box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 5px 25px rgba(0, 0, 0, 0.15);
       font-size: 1.1rem;
       color: var(--primary);
       font-weight: 700;
@@ -204,7 +205,7 @@
       border: 2px solid var(--accent);
       cursor: pointer;
       transition: all 0.3s;
-      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
       position: relative;
       overflow: hidden;
       opacity: 0;
@@ -214,7 +215,7 @@
 
     .botao-oracao:hover {
       transform: translateY(-5px);
-      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 12px 25px rgba(0, 0, 0, 0.18);
       background: var(--primary-dark);
     }
 
@@ -225,7 +226,7 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.85);
+      background: rgba(0, 0, 0, 0.7);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -242,7 +243,7 @@
       border-radius: 20px;
       max-width: 600px;
       border: 3px solid var(--accent);
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
       text-align: center;
       transform: scale(0.9);
       animation: ampliarModal 0.5s forwards 0.3s;
@@ -375,7 +376,7 @@
 
     function criarEstrelasNatalia() {
       const estrelasContainer = document.getElementById('estrelas');
-      const cores = ['#ffde59', '#ff9e5d', '#ff6b8b', '#7bed9f', '#70a1ff'];
+      const cores = ['#eab308', '#fbbf24', '#f59e0b', '#fde047', '#facc15'];
 
       for (let i = 0; i < 12; i++) {
         const estrela = document.createElement('div');
@@ -392,7 +393,7 @@
     }
 
     function criarConfetes() {
-      const cores = ['#ff3366', '#ffde59', '#7bed9f', '#70a1ff', '#9d65c9', '#ff9e5d'];
+      const cores = ['#eab308', '#fbbf24', '#f59e0b', '#fde047', '#1e3c72', '#2a5298'];
 
       for (let i = 0; i < 50; i++) {
         const confete = document.createElement('div');
@@ -484,12 +485,12 @@ Amém.`;
       particula.style.position = 'absolute';
       particula.style.width = '8px';
       particula.style.height = '8px';
-      particula.style.background = '#FFD700';
+      particula.style.background = '#eab308';
       particula.style.borderRadius = '50%';
       particula.style.left = `${Math.random() * 100}%`;
       particula.style.top = '0';
       particula.style.animation = `cairPoeiraDourada ${Math.random() * 2 + 1}s linear forwards`;
-      particula.style.boxShadow = '0 0 10px #FFD700';
+      particula.style.boxShadow = '0 0 10px #eab308';
       container.appendChild(particula);
       setTimeout(() => { if (particula.parentNode) particula.remove(); }, 2000);
     }
