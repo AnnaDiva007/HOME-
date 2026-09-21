@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Separador de ciente Pro • Separador Inteligente</title>
+<title>Separador de ciente PRO</title>
 <link rel="stylesheet" href="styles.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
@@ -11,164 +11,140 @@
 
 <body>
 
-<div class="gradient-bg"></div>
-
-<header class="container glass">
-<div class="header-content">
-<h1><i class="fas fa-code-branch"></i> Separador de ciente <span class="badge">PRO</span></h1>
-<p class="subtitle">Cole ou carregue arquivos (TXT, RTF, PDF) e organize seus dados lado a lado</p>
-</div>
+<header class="container">
+    <div class="header-content">
+        <h1><i class="fas fa-code-branch"></i> Separador de ciente <span class="badge">PRO</span></h1>
+        <p class="subtitle">Cole ou carregue arquivos (TXT, RTF, PDF) e organize seus dados lado a lado</p>
+    </div>
 </header>
 
 <main class="container">
 
-<!-- Seção de Upload/Entrada -->
-<section class="card glass">
+    <!-- Upload / Entrada -->
+    <section class="card">
 
-<div class="dualInput">
+        <div class="dualInput">
 
-<div class="input-card">
-<div class="label-with-icon">
-<i class="fas fa-database"></i>
-<label class="label">Ciente PDF 03</label>
-</div>
-<div class="file-upload">
-<input type="file" id="file1" accept=".txt,.rtf,.pdf" hidden>
-<button class="file-btn" onclick="document.getElementById('file1').click()">
-<i class="fas fa-cloud-upload-alt"></i> Escolher arquivo
-</button>
-<span class="file-name" id="file1-name"></span>
-</div>
-<textarea id="inputText1" rows="10" placeholder="Cole aqui os dados ou carregue um arquivo..."></textarea>
-<div class="char-counter" id="counter1">0 caracteres</div>
-</div>
+            <div class="input-card">
+                <div class="label-with-icon">
+                    <i class="fas fa-database"></i>
+                    <label class="label">Ciente PDF 03</label>
+                </div>
+                <div class="file-upload">
+                    <input type="file" id="file1" accept=".txt,.rtf,.pdf" hidden>
+                    <button class="file-btn" onclick="document.getElementById('file1').click()">
+                        <i class="fas fa-cloud-upload-alt"></i> Escolher arquivo
+                    </button>
+                    <span class="file-name" id="file1-name"></span>
+                </div>
+                <textarea id="inputText1" rows="10" placeholder="Cole aqui os dados ou carregue um arquivo..."></textarea>
+                <div class="char-counter" id="counter1">0 caracteres</div>
+            </div>
 
-<div class="input-card">
-<div class="label-with-icon">
-<i class="fas fa-layer-group"></i>
-<label class="label">Ciente PDF 04</label>
-</div>
-<div class="file-upload">
-<input type="file" id="file2" accept=".txt,.rtf,.pdf" hidden>
-<button class="file-btn" onclick="document.getElementById('file2').click()">
-<i class="fas fa-cloud-upload-alt"></i> Escolher arquivo
-</button>
-<span class="file-name" id="file2-name"></span>
-</div>
-<textarea id="inputText2" rows="10" placeholder="Cole aqui os dados ou carregue um arquivo..."></textarea>
-<div class="char-counter" id="counter2">0 caracteres</div>
-</div>
+            <div class="input-card">
+                <div class="label-with-icon">
+                    <i class="fas fa-layer-group"></i>
+                    <label class="label">Ciente PDF 04</label>
+                </div>
+                <div class="file-upload">
+                    <input type="file" id="file2" accept=".txt,.rtf,.pdf" hidden>
+                    <button class="file-btn" onclick="document.getElementById('file2').click()">
+                        <i class="fas fa-cloud-upload-alt"></i> Escolher arquivo
+                    </button>
+                    <span class="file-name" id="file2-name"></span>
+                </div>
+                <textarea id="inputText2" rows="10" placeholder="Cole aqui os dados ou carregue um arquivo..."></textarea>
+                <div class="char-counter" id="counter2">0 caracteres</div>
+            </div>
 
-</div>
+        </div>
 
-<div class="actions">
-<button id="btnParse" class="primary">
-<i class="fas fa-magic"></i> Separar Dados
-</button>
-<button id="btnClear" class="secondary">
-<i class="fas fa-eraser"></i> Limpar
-</button>
-</div>
+        <div class="actions">
+            <button id="btnParse" class="primary">
+                <i class="fas fa-magic"></i> Separar Dados
+            </button>
+            <button id="btnClear" class="secondary">
+                <i class="fas fa-eraser"></i> Limpar
+            </button>
+        </div>
 
-</section>
+    </section>
 
-<!-- Seção de Resultados -->
-<section class="card glass">
+    <!-- Resultados -->
+    <section class="card">
 
-<div class="stats-wrapper">
-<div class="stat-box">
-<i class="fas fa-box"></i>
-<div class="stat-info">
-<span>Total encontrados: FDP 03</span>
-<strong id="count1">0</strong>
-</div>
-</div>
-<div class="stat-box">
-<i class="fas fa-boxes"></i>
-<div class="stat-info">
-<span> Total encontrados: FDP 04</span>
-<strong id="count2">0</strong>
-</div>
-</div>
-</div>
+        <div class="stats-wrapper">
+            <div class="stat-box">
+                <i class="fas fa-box"></i>
+                <div class="stat-info">
+                    <span>Total encontrados: FDP 03</span>
+                    <strong id="count1">0</strong>
+                </div>
+            </div>
+            <div class="stat-box">
+                <i class="fas fa-boxes"></i>
+                <div class="stat-info">
+                    <span>Total encontrados: FDP 04</span>
+                    <strong id="count2">0</strong>
+                </div>
+            </div>
+        </div>
 
-<div class="actions centered">
-<button id="btnDownload" class="success">
-<i class="fas fa-file-excel"></i> Exportar Planilha
-</button>
-</div>
-<!--
-Preview dos dados processados (opcional) 
-<div id="previewSection" class="preview-section" style="display: none;">
-<h3><i class="fas fa-eye"></i> Pré-visualização</h3>
-<div class="preview-grid">
-<div class="preview-box" id="preview1"></div>
-<div class="preview-box" id="preview2"></div>
-</div>
-</div>
-</section> -->
+        <div class="actions centered">
+            <button id="btnDownload" class="success">
+                <i class="fas fa-file-excel"></i> Exportar Planilha
+            </button>
+        </div>
 
-<div id="previewSection" class="preview-section">
+        <div id="previewSection" class="preview-section">
+            <h3><i class="fas fa-eye"></i> Pré-visualização</h3>
 
-<h3><i class="fas fa-eye"></i> Pré-visualização</h3>
+            <div class="preview-grid">
 
-<div class="preview-grid">
+                <div class="preview-box">
+                    <table id="table1">
+                        <thead>
+                            <tr>
+                                <th>Numeração</th>
+                                <th>Nome</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
 
-<div class="preview-box">
-<table id="table1">
-<thead>
-<tr>
-<th>Numeração</th>
-<th>Nome</th>
-</tr>
-</thead>
-<tbody></tbody>
-</table>
-</div>
+                <div class="preview-box">
+                    <table id="table2">
+                        <thead>
+                            <tr>
+                                <th>Numeração</th>
+                                <th>Nome</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
 
-<div class="preview-box">
-<table id="table2">
-<thead>
-<tr>
-<th>Numeração</th>
-<th>Nome</th>
-</tr>
-</thead>
-<tbody></tbody>
-</table>
-</div>
+            </div>
+        </div>
 
-
-
-
-
-</div>
-
-</div>
-
-
-
-
-
-
-
+    </section>
 
 </main>
 
 <footer class="container">
-<div class="footer-content glass">
-<div class="footer-left">
-<i class="fas fa-heart" style="color: #ff4d4d;"></i>
-<span>Anna do HC • </span>
-</div>
-<div class="footer-right">
-<span>v2.0</span>
-<i class="fas fa-crown" style="color: #ffd700;"></i>
-</div>
-</div>
+    <div class="footer-content">
+        <div class="footer-left">
+            <i class="fas fa-heart" style="color: #b03a2e;"></i>
+            <span>Anna do HC</span>
+        </div>
+        <div class="footer-right">
+            <span>v2.0</span>
+            <i class="fas fa-crown" style="color: #eab308;"></i>
+        </div>
+    </div>
 </footer>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
 <script src="app.js"></script>
 
 </body>
