@@ -49,7 +49,6 @@
 
     h1:hover::after { width: 100%; }
 
-    /* Natalia */
     .natalia-container {
       position: fixed;
       top: 20px;
@@ -93,7 +92,6 @@
       animation-fill-mode: forwards;
     }
 
-    /* Cards */
     .container {
       display: flex;
       flex-wrap: wrap;
@@ -158,7 +156,6 @@
       transform: scale(1.03);
     }
 
-    /* Confetes */
     .confete {
       position: fixed;
       width: 10px;
@@ -168,7 +165,6 @@
       pointer-events: none;
     }
 
-    /* Mensagem */
     .mensagem-especial {
       position: fixed;
       bottom: 30px;
@@ -191,64 +187,6 @@
       animation: mostrarMensagem 3s forwards;
     }
 
-    /* Botão oração 
-    .botao-oracao {
-      display: inline-block;
-      background: var(--primary);
-      color: #fff;
-      padding: 12px 30px;
-      border-radius: 50px;
-      font-size: 1rem;
-      font-weight: 700;
-      text-decoration: none;
-      margin-top: 40px;
-      border: 2px solid var(--accent);
-      cursor: pointer;
-      transition: all 0.3s;
-      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
-      position: relative;
-      overflow: hidden;
-      opacity: 0;
-      animation: aparecerBotao 1s forwards;
-      animation-delay: 1s;
-    }
-
-    .botao-oracao:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 12px 25px rgba(0, 0, 0, 0.18);
-      background: var(--primary-dark);
-    }
-
-    /* Modal oração
-    .modal-oracao {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.7);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 10000;
-      padding: 20px;
-      opacity: 0;
-      animation: aparecerModal 0.5s forwards;
-    }
-
-    .conteudo-modal {
-      background: var(--primary);
-      color: var(--accent-light);
-      padding: 40px;
-      border-radius: 20px;
-      max-width: 600px;
-      border: 3px solid var(--accent);
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
-      text-align: center;
-      transform: scale(0.9);
-      animation: ampliarModal 0.5s forwards 0.3s;
-    }
-*/
     @keyframes flutuar {
       0%, 100% { transform: translateY(0); opacity: 1; }
       50% { transform: translateY(-10px); opacity: 1; }
@@ -270,11 +208,6 @@
       100% { opacity: 1; transform: translateY(0); }
     }
 
-    @keyframes aparecerBotao {
-      0% { opacity: 0; transform: translateY(30px); }
-      100% { opacity: 1; transform: translateY(0); }
-    }
-
     @keyframes mostrarMensagem {
       0% { opacity: 0; transform: translateX(-50%) translateY(20px); }
       15% { opacity: 1; transform: translateX(-50%) translateY(0); }
@@ -285,22 +218,6 @@
     @keyframes voarConfete {
       0% { opacity: 1; transform: translateY(0) rotate(0deg); }
       100% { opacity: 0; transform: translateY(100vh) rotate(360deg); }
-    }
-
-    @keyframes aparecerModal {
-      0% { opacity: 0; }
-      100% { opacity: 1; }
-    }
-
-    @keyframes ampliarModal {
-      0% { transform: scale(0.9); }
-      100% { transform: scale(1); }
-    }
-
-    @keyframes cairPoeiraDourada {
-      0% { transform: translateY(-100px) rotate(0deg); opacity: 0; }
-      10% { opacity: 1; }
-      100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
     }
 
     @media (max-width: 768px) {
@@ -353,12 +270,7 @@
   </div>
 
   <div id="mensagemDia" class="mensagem-especial">Tenha um dia Iluminado ✨</div>
-<!-- 
-  <button class="botao-oracao" onclick="fazerOracao()">
-    Oração da manhã
-  </button>
--->
-  
+
   <script>
     function toggleExtrair() {
       mostrarMensagemDia();
@@ -432,69 +344,6 @@
           clearInterval(digitar);
         }
       }, 100);
-    }
-/*
-    function fazerOracao() {
-      const oracao = `Senhor Deus Todo-Poderoso,
-
-Em nome de Jesus Cristo, clamo pela proteção do Salmo 91.
-Cobre-me com Tuas asas poderosas,
-Guarda-me em todos os meus caminhos,
-Livra-me de todo mal e perigo.
-
-Que Teus anjos me sustentem em suas mãos,
-E que em Ti eu encontre meu refúgio e fortaleza.
-Amém.`;
-
-      const modal = document.createElement('div');
-      modal.className = 'modal-oracao';
-
-      const conteudoModal = document.createElement('div');
-      conteudoModal.className = 'conteudo-modal';
-
-      conteudoModal.innerHTML = `
-        <h2 style="color: #fde047; margin-bottom: 30px;">Oração da manhã</h2>
-        <div style="white-space: pre-line; font-size: 1.1rem; line-height: 1.6; margin-bottom: 30px; text-align: left;">${oracao}</div>
-        <button onclick="fecharOracao()" style="
-          background: #eab308;
-          color: #1a1500;
-          border: none;
-          padding: 12px 30px;
-          border-radius: 50px;
-          font-size: 1rem;
-          font-weight: bold;
-          cursor: pointer;
-          transition: all 0.3s;
-        ">Amém</button>
-      `;
-
-      modal.appendChild(conteudoModal);
-      document.body.appendChild(modal);
-
-      for (let i = 0; i < 30; i++) {
-        setTimeout(() => criarParticulaDourada(modal), i * 50);
-      }
-      */
-    }
-
-    function fecharOracao() {
-      const modal = document.querySelector('.modal-oracao');
-      if (modal) modal.remove();
-    }
-
-    function criarParticulaDourada(container) {
-      const particula = document.createElement('div');
-      particula.style.position = 'absolute';
-      particula.style.width = '8px';
-      particula.style.height = '8px';
-      particula.style.background = '#eab308';
-      particula.style.borderRadius = '50%';
-      particula.style.left = `${Math.random() * 100}%`;
-      particula.style.top = '0';
-      particula.style.animation = `cairPoeiraDourada ${Math.random() * 2 + 1}s linear forwards`;
-      particula.style.boxShadow = '0 0 10px #eab308';
-      container.appendChild(particula);
-      setTimeout(() => { if (particula.parentNode) particula.remove(); }, 2000);
     }
 
     document.addEventListener('DOMContentLoaded', function() {
