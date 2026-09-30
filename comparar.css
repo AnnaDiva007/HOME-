@@ -377,3 +377,22 @@ tr.linha-csv   { border-left: 3px solid #d68910; }
     color: #b03a2e;
 }
 
+.btn-atalho {
+    display: inline-block;
+    margin-top: 12px;
+    padding: 8px 18px;
+    background: #fff;
+    color: #1e3c72;
+    border: 1px solid #1e3c72;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-atalho:hover {
+    background: #1e3c72;
+    color: #fff;
+}
