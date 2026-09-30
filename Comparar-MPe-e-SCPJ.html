@@ -16,17 +16,23 @@
             <button id="btnReiniciar" class="btn-reiniciar">Reiniciar</button>
         </header>
 
-        <section class="upload-area">
+             <section class="upload-area">
             <div class="upload-box">
                 <label for="csvInput">Arquivo CSV (MPe)</label>
                 <input type="file" id="csvInput" accept=".csv">
                 <span id="csvStatus" class="status">Nenhum arquivo selecionado</span>
+                <a class="btn-atalho" href="https://mpe.mpmg.mp.br/v2/expediente" target="_blank">
+                    Baixar CSV do MPe
+                </a>
             </div>
 
             <div class="upload-box">
                 <label for="pdfInput">Arquivo PDF (SCPJ)</label>
                 <input type="file" id="pdfInput" accept=".pdf">
                 <span id="pdfStatus" class="status">Nenhum arquivo selecionado</span>
+                <a class="btn-atalho" href="https://aplicacao.mpmg.mp.br/scpj/f/t/relatorioprocessospendentescorreg" target="_blank">
+                    Baixar PDF do SCPJ
+                </a>
             </div>
 
             <button id="btnProcessar" class="btn-principal" disabled>
